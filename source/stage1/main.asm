@@ -1,4 +1,6 @@
 [org 0x7C00]
+; TODO: Better error reporting
+; TODO: Add LBA 48-bit support
 
 [bits 16]
 jmp start_hi
@@ -55,34 +57,20 @@ start_hi:
 
 [bits 16]
 start_lo:
-	; Find first bootable partition
-	call disk_init
-	mov si, 0x01BE
-
-.loop:
-	mov al, [si]
-	test al, 0x80
-	jnz .break
-	cmp si, 0x01EE
-	add si, 0x10
-	jne .loop
-
-.error:
-	mov al, 'A'
-	jmp pute
-
-.break:
-	; TODO: Limit number of sectors loading!
 	; Load stage2 into memory
-	mov eax, [si+0x08]
+	call disk_init
+	mov eax, [stage2_location]
 	mov ebx, (stage2_buffer << 0x0C) | (stage2_buffer % 0x10)
-	mov si,  [si+0x0C]
+	mov si,  [stage2_sectors]
 	call disk_read
 
 	; Jump to stage2
 	jmp stage2_buffer
 
-stage2_buffer: equ 0x1000
+times 0x01B8-($-$$) db 0x00
+stage2_location: dd  0x00
+stage2_sectors:  dw  0x00
+stage2_buffer:   equ 0x1000
 
 times 0x01BE-($-$$) db 0x00
 %macro partition_make 1

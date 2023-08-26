@@ -5,9 +5,10 @@ OBJCOPY:=i686-elf-objcopy
 
 .PHONY: clean
 
-build/build.img: build/stage1/build.bin build/stage2/build.bin
+build/build.img: build/stage1/build.bin build/stage2/build.bin tools/install.py
 	dd if=/dev/zero of=$@ bs=512 count=2880
 	dd if=build/stage1/build.bin of=$@ conv=notrunc
+	./tools/install.py $@ build/stage1/build.bin build/stage2/build.bin
 
 build/stage1/build.bin: $(shell find source/stage1/ -type f \( -name '*.asm' -o -name '*.inc' \))
 	mkdir -p ${@D}
