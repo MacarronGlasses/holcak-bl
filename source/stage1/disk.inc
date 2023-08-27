@@ -32,7 +32,7 @@ disk_init:
 	ret
 
 .error:
-	mov al, 'B'
+	mov al, '1'
 	jmp pute
 
 ; Resets disk controller
@@ -48,7 +48,7 @@ disk_reset:
 	ret
 
 .error:
-	mov al, 'C'
+	mov al, '2'
 	jmp pute
 
 ; Reads sectors from disk
@@ -154,7 +154,7 @@ disk_read_0x02:
 	jmp .retry
 
 .fatal:
-	mov al, 'D'
+	mov al, '3'
 	jmp pute
 
 .done:
@@ -199,7 +199,7 @@ disk_read_0x42:
 	ret
 
 .error:
-	mov al, 'E'
+	mov al, '4'
 	jmp pute
 
 disk_packet:

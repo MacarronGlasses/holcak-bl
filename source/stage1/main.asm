@@ -1,9 +1,8 @@
 [org 0x7C00]
-; TODO: Better error reporting
 ; TODO: Add LBA 48-bit support
 
 [bits 16]
-jmp start_hi
+jmp start_16
 times 0x03-($-$$) db 0x00
 
 ; BIOS Parameter Block is needed because some bioses are overwriting this section
@@ -33,11 +32,11 @@ start_bdb:
 	.volume_label:         db "HOLCAK     "
 	.file_system_type:     times 0x08 db 0x00
 
-%include "pute.inc"
+%include "puts.inc"
 %include "disk.inc"
 
 [bits 16]
-start_hi:
+start_16:
 	; Initialize registers
 	cli
 	xor ax, ax
@@ -45,7 +44,6 @@ start_hi:
 	mov es, ax
 	mov ss, ax
 	mov sp, 0x7C00
-	sti
 
 	; Relocate itself to lower address
 	cld
@@ -53,10 +51,10 @@ start_hi:
 	mov si, 0x7C00
 	mov di, 0x0500
 	rep movsd
-	jmp 0x0000:start_lo
+	jmp 0x0000:.continue
 
 [bits 16]
-start_lo:
+.continue:
 	; Load stage2 into memory
 	call disk_init
 	mov eax, [stage2_location]

@@ -1,8 +1,8 @@
-ENTRY(start_16)
+ENTRY(entry_16)
 
 SECTIONS
 {
-	. = 0x20000;
+	. = 0x1000;
 
 	.entry  : {*(.entry) }
 	.text   : {*(.text)  }
