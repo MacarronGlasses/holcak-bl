@@ -2,18 +2,20 @@
 #include <define.h>
 #include "cpuid.h"
 #include "puts.h"
+#include "pci.h"
 
 __cdecl void start_16(uint32_t disk) {
-	// TODO: `cpuid_init` should just return bool if cpuid exist!
-	cpuid_info_t cpuid = cpuid_init();
-	if (cpuid.levels > 0x00) {
-		printf("CPUID detected:\n\r");
-		printf("    Vendor:     %s\n\r", cpuid.vendor);
-		printf("    Features A: %x\n\r", cpuid.features[0]);
-		printf("    Features B: %x\n\r", cpuid.features[1]);
-		printf("    Features C: %x\n\r", cpuid.features[2]);
-		printf("    Features D: %x\n\r", cpuid.features[3]);
-	} else {
-		printf("CPUID not supported!\n\r");
+	// TODO: Pass all the info to stage3
+//	__attribute__((far)) void *x;
+
+//	cpu_info_t *cpu;
+	if (cpuid_exist()) {
+		printf("CPUID detected!\n\r");
+		// TODO: Initialize cpu specific features!
+	}
+
+	pci_info_t *pci = pci_init();
+	if (pci->mechanism != PCI_MECHANISM_NOT_FOUND) {
+		printf("PCI detected!\n\r");
 	}
 }
