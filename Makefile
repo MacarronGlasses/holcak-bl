@@ -29,7 +29,7 @@ build/stage2/%.c.o: source/stage2/%.c
 
 build/stage2/%.asm.o: source/stage2/%.asm
 	@mkdir -p ${@D}
-	${AS} -I source/stage1/ -I source/stage2/ -felf32 -MD $(addsuffix .d,$(basename $@)) -o $@ $<
+	${AS} -I source/stage2/ -felf32 -MD $(addsuffix .d,$(basename $@)) -o $@ $<
 
 start: build/build.img
 	qemu-system-i386 -M q35 -m 256M -drive format=raw,file=build/build.img -boot c
