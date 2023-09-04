@@ -1,12 +1,12 @@
 section .text
 [extern main]
 
+[bits 16]
 %include "puts.inc"
 %include "cpuid.inc"
 %include "mem.inc"
 %include "pci.inc"
 %include "a20.inc"
-%include "gdt.inc"
 
 ; TODO: Add keyboard controller method to A20 line
 ; TODO: Initialize MSRs
@@ -18,8 +18,6 @@ section .entry
 start_16:
 	; Initialize registers
 	cli
-	mov ax, ds
-	mov ss, ax
 	mov sp, 0x1000
 	mov bp, sp
 
@@ -28,9 +26,6 @@ start_16:
 	call pci_init
 	call a20_enable
 	call mem_init
-
-	mov ebx, main
-	call putx
 
 	; Enter protected mode
 	lgdt [gdt_info.desc]
@@ -48,9 +43,12 @@ start_32:
 	mov esp, ebp
 
 	; Jump to stage3
-;	call main
+	call main
 	cli
 	hlt
+
+[bits 32]
+%include "gdt.inc"
 
 stack_size: equ 0x2000
 section .bss

@@ -1,3 +1,4 @@
+[bits 32]
 gdt_info:
 .null:
 	dd 0x00
@@ -17,7 +18,7 @@ gdt_info:
 	db 0xCF
 	db 0x00
 .desc:
-	dw .desc - gdt_info - 1
+	dw .desc - gdt_info - 0x01
 	dw gdt_info
 
 code_seg: equ gdt_info.code - gdt_info

@@ -3,7 +3,7 @@ CC:=i686-elf-gcc
 LD:=i686-elf-ld
 OBJCOPY:=i686-elf-objcopy
 
-.PHONY: clean start
+.PHONY: clean start debug
 
 build/build.img: build/stage1/build.bin build/stage2/build.bin tools/install.py
 	dd if=/dev/zero of=$@ bs=512 count=2880
@@ -25,23 +25,27 @@ endif
 
 build/stage2/%.c.o: source/stage2/%.c
 	@mkdir -p ${@D}
-	${CC} -I ~/toolchain/gcc-build/gcc/include/ -I source/global/ -Wall -Wextra -pedantic -std=c17 -ffreestanding -nostartfiles -MMD -MP -fno-pie -fno-pic -nostdlib -nostdinc -c -m16 -o $@ $<
+	${CC} -I ~/toolchain/gcc-build/gcc/include/ -I source/global/ -Wall -Wextra -pedantic -std=c17 -ggdb -ffreestanding -nostartfiles -MMD -MP -fno-pie -fno-pic -nostdlib -nostdinc -c -m16 -o $@ $<
 
 build/stage2/%.asm.o: source/stage2/%.asm
 	@mkdir -p ${@D}
-	${AS} -I source/stage2/ -felf32 -MD $(addsuffix .d,$(basename $@)) -o $@ $<
+	${AS} -I source/stage2/ -g -felf32 -Fdwarf -MD $(addsuffix .d,$(basename $@)) -o $@ $<
 
 build/stage3/%.c.o: source/stage3/%.c
 	@mkdir -p ${@D}
-	${CC} -I ~/toolchain/gcc-build/gcc/include/ -I source/global/ -Wall -Wextra -pedantic -std=c17 -ffreestanding -nostartfiles -MMD -MP -fno-pie -fno-pic -nostdlib -nostdinc -c -m32 -o $@ $<
+	${CC} -I ~/toolchain/gcc-build/gcc/include/ -I source/global/ -Wall -Wextra -pedantic -std=c17 -ggdb -ffreestanding -nostartfiles -MMD -MP -fno-pie -fno-pic -nostdlib -nostdinc -c -m32 -o $@ $<
 
 build/stage3/%.asm.o: source/stage3/%.asm
 	@mkdir -p ${@D}
-	${AS} -I source/stage2/ -I source/stage3/ -felf32 -MD $(addsuffix .d,$(basename $@)) -o $@ $<
+	${AS} -I source/stage2/ -I source/stage3/ -g -felf32 -Fdwarf -MD $(addsuffix .d,$(basename $@)) -o $@ $<
 
 start: build/build.img
 	qemu-system-i386 -M q35 -m 256M -drive format=raw,file=build/build.img -boot c
 #	qemu-system-i386 -M q35 -m 256M -drive format=raw,if=floppy,file=build/build.img
+
+debug: build/build.img
+	qemu-system-i386 -M q35 -m 256M -drive format=raw,file=build/build.img -boot c -s -S &
+	gdb -x script/debug.gdb
 
 clean:
 	rm -rf build/
