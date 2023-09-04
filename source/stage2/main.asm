@@ -29,6 +29,9 @@ start_16:
 	call a20_enable
 	call mem_init
 
+	mov ebx, main
+	call putx
+
 	; Enter protected mode
 	lgdt [gdt_info.desc]
 	mov eax, cr0
@@ -45,7 +48,7 @@ start_32:
 	mov esp, ebp
 
 	; Jump to stage3
-	call main
+;	call main
 	cli
 	hlt
 
