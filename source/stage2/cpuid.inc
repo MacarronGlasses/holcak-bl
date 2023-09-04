@@ -54,7 +54,7 @@ cpuid_init:
 	mov eax, ecx
 	shl eax, 0x02
 	mov ebx, [cpu_info.features+eax]
-	call putx
+	call putx32
 	call putnl
 
 	inc cx

@@ -29,17 +29,12 @@ puts:
 ; References:
 ;   https://stanislavs.org/helppc/int_10-e.html
 [bits 16]
-putx:
+put32:
 	push eax
 	push ebx
 	push cx
 
 	mov ah, 0x0E
-	mov al, 0x30
-	int 0x10
-	mov al, 0x78
-	int 0x10
-
 	mov cx, 0x08
 
 .loop:
@@ -62,6 +57,32 @@ putx:
 	pop cx
 	pop ebx
 	pop eax
+	ret
+
+; Prints 32-bit hexadecimal number with prefix
+; Parameters:
+;   ebx   - Hexadecimal number
+putx32:
+	push ax
+	mov ah, 0x0E
+	mov al, 0x30
+	int 0x10
+	mov al, 0x78
+	int 0x10
+	call put32
+	pop ax
+	ret
+
+; Prints 64-bit hexadecimal number with prefix
+; Parameters:
+;   ebx   - Low part of hexadecimal number
+;   ecx   - High part of hexadecimal number
+putx64:
+	push ebx
+	mov ebx, ecx
+	call putx32
+	pop ebx
+	call put32
 	ret
 
 ; Prints new line

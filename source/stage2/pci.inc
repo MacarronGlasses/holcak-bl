@@ -23,7 +23,7 @@ pci_init:
 	call puts
 	mov word [pci_info.version], bx
 	and ebx, 0xFFFF
-	call putx
+	call putx32
 	call putnl
 
 	mov si, .msg2
@@ -31,7 +31,7 @@ pci_init:
 	mov byte [pci_info.hardware], al
 	xor ebx, ebx
 	mov bl, al
-	call putx
+	call putx32
 	call putnl
 
 	mov si, .msg3
@@ -40,7 +40,7 @@ pci_init:
 	mov word [pci_info.buses], cx
 	xor ebx, ebx
 	mov bx, cx
-	call putx
+	call putx32
 	call putnl
 
 .done:
