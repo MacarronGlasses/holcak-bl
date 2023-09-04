@@ -25,7 +25,7 @@ endif
 
 build/stage2/%.c.o: source/stage2/%.c
 	@mkdir -p ${@D}
-	${CC} -I ~/toolchain/gcc-build/gcc/include/ -I source/global/ -Wall -Wextra -pedantic -std=c17 -ffreestanding -nostartfiles -MMD -MP -fno-pie -fno-pic -nostdlib -nostdinc -c -m16 -o $@ $<	
+	${CC} -I ~/toolchain/gcc-build/gcc/include/ -I source/global/ -Wall -Wextra -pedantic -std=c17 -ffreestanding -nostartfiles -MMD -MP -fno-pie -fno-pic -nostdlib -nostdinc -c -m16 -o $@ $<
 
 build/stage2/%.asm.o: source/stage2/%.asm
 	@mkdir -p ${@D}
