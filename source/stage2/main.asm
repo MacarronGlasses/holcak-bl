@@ -1,4 +1,6 @@
 section .text
+[extern main]
+
 %include "puts.inc"
 %include "cpuid.inc"
 %include "mem.inc"
@@ -42,8 +44,8 @@ start_32:
 	mov ebp, stack_data + stack_size
 	mov esp, ebp
 
-	; TODO: Jump to main
-
+	; Jump to stage3
+	call main
 	cli
 	hlt
 

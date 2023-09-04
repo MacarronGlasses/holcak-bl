@@ -15,7 +15,7 @@ mem_init_0xE820:
 mem_data_size: equ 0xFF
 section .bss
 struc mem_node
-	.next:  resd 0x01
+	.next:  resw 0x01
 	.base:  resq 0x01
 	.limit: resq 0x01
 	.type:  resd 0x01

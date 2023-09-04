@@ -7,13 +7,13 @@ a20_enable:
 	call a20_test
 	jc .done
 
-.try_0:
+.try0:
 	mov ax, 0x2403
 	int 0x15
 	call a20_test
 	jc .done
 
-.try_1:
+.try1:
 	xor al, al
 	mov ah, 0x20
 	in al, 0x92
@@ -23,9 +23,9 @@ a20_enable:
 	jc .done
 	test ah, ah
 	dec ah
-	jnz .try_1
+	jnz .try1
 
-.try_2:
+.try2:
 	in al, 0xEE
 	call a20_test
 	jc .done
