@@ -1,6 +1,6 @@
 #ifndef STAGE3_INFO_H_
 #define STAGE3_INFO_H_
-#include <define.h>
+#include <global.h>
 #include <stdint.h>
 
 #define MEM_NODE_USABLE       0x01
