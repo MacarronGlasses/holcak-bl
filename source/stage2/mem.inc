@@ -25,22 +25,27 @@ mem_init:
 	jne .error
 
 	; Save size of `mem_node`
-	mov [mem_info.bytes], ecx
+	mov [mem_info.bytes], cx
 	pop es
 
 	call mem_init_0xE820
 
-	; Print debug information	
+.done:
+	; Print debug information
 	mov si, .msg1
+	call puts
+
+	mov si, .msg2
 	call puts
 	xor ebx, ebx
 	mov bx, [mem_info.length]
 	call putx32
 	call putnl
 
-	mov si, .msg2
+	mov si, .msg3
 	call puts
-	mov ebx, [mem_info.bytes]
+	xor ebx, ebx
+	mov bx, [mem_info.bytes]
 	call putx32
 	call putnl
 
@@ -48,15 +53,15 @@ mem_init:
 	ret
 
 .error:
-	; TODO: Try different interrupt! https://wiki.osdev.org/Detecting_Memory_(x86)#Other_Methods
 	mov si, .msg0
 	call puts
 	cli
 	hlt
 
 .msg0: db "Error: Memory initialization failed!", 0x00
-.msg1: db "Memory info length: ", 0x00
-.msg2: db "Memory info block:  ", 0x00
+.msg1: db "Memory detected!", endl, 0x00
+.msg2: db "    Length:    ", 0x00
+.msg3: db "    Block:     ", 0x00
 
 ; Detects free regions of memory using interrupt 0xE820
 ; References:
@@ -68,7 +73,8 @@ mem_init_0xE820:
 	; Initialize registers
 	xor ebx, ebx
 	mov edx, 0x534D4150
-	mov ecx, [mem_info.bytes]
+	xor ecx, ecx
+	mov cx, [mem_info.bytes]
 	mov edi, mem_info.data
 	xor esi, esi
 
@@ -89,13 +95,13 @@ mem_init_0xE820:
 	jc .error
 
 	; Test if size of block is valid
-	mov eax, [mem_info.bytes]
+	xor eax, eax
+	mov ax, [mem_info.bytes]
 	cmp eax, ecx
 	jne .error
 
 	; Add offset to buffer and increment length
 	pop edi
-	call mem_node_print
 	add edi, mem_node_size
 	inc si
 
@@ -164,6 +170,7 @@ mem_node_print:
 .msg2: db " (", 0x00
 .msg3: db ")", endl, 0x00
 
+[global mem_info]
 mem_data_size: equ 0xFF
 section .bss
 struc mem_node
@@ -173,7 +180,7 @@ struc mem_node
 	.acpi:  resd 0x01
 endstruc
 mem_info:
-	.data:   resb mem_data_size*mem_node_size
 	.length: resw 0x01
-	.bytes:  resb 0x01
+	.bytes:  resw 0x01
+	.data:   resb mem_data_size*mem_node_size
 section .text

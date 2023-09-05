@@ -53,6 +53,7 @@ pci_init:
 .msg2: db "    Hardware:  ", 0x00
 .msg3: db "    Buses:     ", 0x00
 
+[global pci_info]
 section .bss
 pci_info:
 	.entry:    resd 0x01

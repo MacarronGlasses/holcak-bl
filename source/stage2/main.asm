@@ -9,6 +9,8 @@ section .text
 %include "a20.inc"
 
 ; TODO: Add keyboard controller method to A20 line
+; TODO: Add more memory detection methods (https://wiki.osdev.org/Detecting_Memory_(x86)#Other_Methods)
+; TODO: Add printf function
 ; TODO: Initialize MSRs
 
 section .entry
@@ -18,14 +20,14 @@ section .entry
 start_16:
 	; Initialize registers
 	cli
-	mov sp, 0x1000
+	mov	sp, 0x1000
 	mov bp, sp
 
 	; Gather information from BIOS
 	call cpuid_init
 	call pci_init
-	call a20_enable
 	call mem_init
+	call a20_enable
 
 	; Enter protected mode
 	lgdt [gdt_info.desc]

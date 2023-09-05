@@ -95,6 +95,7 @@ cpuid_exist:
 	pop eax
 	ret
 
+[global cpu_info]
 section .bss
 cpu_info:
 	.levels:   resd 0x01
