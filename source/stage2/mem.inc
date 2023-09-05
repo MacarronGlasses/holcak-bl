@@ -30,11 +30,39 @@ mem_init:
 
 	call mem_init_0xE820
 
-.done:
+.dump:
 	; Print debug information
 	mov si, .msg1
 	call puts
 
+	xor ecx, ecx
+	mov ax, [mem_info.length]
+
+.loop:
+	cmp ax, cx
+	je .done
+
+	mov si, .msg4
+	call puts
+	mov bl, cl
+	call putx8
+	mov si, .msg5
+	call puts
+
+	push eax
+	mov eax, ecx
+	mov edx, mem_node_size
+	mul edx
+
+	mov edi, eax
+	add edi, mem_info.data
+	call mem_node_print
+	pop eax
+
+	inc cx
+	jmp .loop
+
+.done:
 	mov si, .msg2
 	call puts
 	xor ebx, ebx
@@ -60,8 +88,10 @@ mem_init:
 
 .msg0: db "Error: Memory initialization failed!", 0x00
 .msg1: db "Memory detected!", endl, 0x00
-.msg2: db "    Length:    ", 0x00
-.msg3: db "    Block:     ", 0x00
+.msg2: db "    Length:    0x", 0x00
+.msg3: db "    Block:     0x", 0x00
+.msg4: db "    Node 0x", 0x00
+.msg5: db ": 0x", 0x00
 
 ; Detects free regions of memory using interrupt 0xE820
 ; References:
@@ -133,23 +163,24 @@ mem_init_0xE820:
 ; Parameters:
 ;   edi   - Memory block address
 mem_node_print:
-	push ebx
-	push ecx
+	push eax
 	push si
 
 	mov si, .msg0
 	call puts
 
+	mov ebx, [edi+0x04]
+	call putx32
 	mov ebx, [edi+0x00]
-	mov ecx, [edi+0x04]
-	call putx64
+	call putx32
 
 	mov si, .msg1
 	call puts
 
+	mov ebx, [edi+0x0C]
+	call putx32
 	mov ebx, [edi+0x08]
-	mov ecx, [edi+0x0C]
-	call putx64
+	call putx32
 
 	mov si, .msg2
 	call puts
@@ -161,13 +192,12 @@ mem_node_print:
 	call puts
 
 	pop si
-	pop ecx
-	pop ebx
+	pop eax
 	ret
 
-.msg0: db "Memory detected: ", 0x00
-.msg1: db " = ", 0x00
-.msg2: db " (", 0x00
+.msg0: db "", 0x00
+.msg1: db " = 0x", 0x00
+.msg2: db " (0x", 0x00
 .msg3: db ")", endl, 0x00
 
 [global mem_info]

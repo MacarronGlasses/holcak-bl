@@ -73,7 +73,7 @@ cpuid_init:
 
 .msg0: db "CPUID detected!", endl, 0x00
 .msg1: db "    Vendor id: ", 0x00
-.msg2: db "    Feature _: ", 0x00
+.msg2: db "    Feature _: 0x", 0x00
 
 ; Checks if CPUID instruction is available
 ; Returns:

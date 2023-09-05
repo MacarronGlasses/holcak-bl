@@ -49,9 +49,9 @@ pci_init:
 	ret
 
 .msg0: db "PCI detected!", endl, 0x00
-.msg1: db "    Version:   ", 0x00
-.msg2: db "    Hardware:  ", 0x00
-.msg3: db "    Buses:     ", 0x00
+.msg1: db "    Version:   0x", 0x00
+.msg2: db "    Hardware:  0x", 0x00
+.msg3: db "    Buses:     0x", 0x00
 
 [global pci_info]
 section .bss

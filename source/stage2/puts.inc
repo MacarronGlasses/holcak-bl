@@ -23,23 +23,15 @@ puts:
 	pop ax
 	ret
 
-; Prints 32-bit hexadecimal number
+; Prints 4-bit hexadecimal value (value bigger than 0x0F results in UB)
 ; Parameters:
-;   ebx   - Hexadecimal number
+;   bl    - Value
 ; References:
 ;   https://stanislavs.org/helppc/int_10-e.html
-[bits 16]
-put32:
-	push eax
-	push ebx
-	push cx
-
+putx4:
+	push ax
+	mov al, bl
 	mov ah, 0x0E
-	mov cx, 0x08
-
-.loop:
-	mov eax, ebx
-	shr eax, 0x1C
 
 	cmp al, 0x0A
 	jl .dump
@@ -47,42 +39,44 @@ put32:
 
 .dump:
 	add al, 0x30
-	mov ah, 0x0E
 	int 0x10
 
-	shl ebx, 0x04
-	loop .loop
-
-.done:
-	pop cx
-	pop ebx
-	pop eax
-	ret
-
-; Prints 32-bit hexadecimal number with prefix
-; Parameters:
-;   ebx   - Hexadecimal number
-putx32:
-	push ax
-	mov ah, 0x0E
-	mov al, 0x30
-	int 0x10
-	mov al, 0x78
-	int 0x10
-	call put32
 	pop ax
 	ret
 
-; Prints 64-bit hexadecimal number with prefix
+; Prints 8-bit hexadecimal value
 ; Parameters:
-;   ebx   - Low part of hexadecimal number
-;   ecx   - High part of hexadecimal number
-putx64:
+;   bl    - Value
+putx8:
+	push bx
+	shr bl, 0x04
+	call putx4
+	mov bl, [esp]
+	and bl, 0x0F
+	call putx4
+	pop bx
+	ret
+
+; Prints-16 bit hexadecimal value
+; Parameters:
+;   bx    - Value
+putx16:
+	push bx
+	mov bl, bh
+	call putx8
+	pop bx
+	call putx8
+	ret
+
+; Prints-32 bit hexadecimal value
+; Parameters:
+;   ebx   - Value
+putx32:
 	push ebx
-	mov ebx, ecx
-	call putx32
+	shr ebx, 0x10
+	call putx16
 	pop ebx
-	call put32
+	call putx16
 	ret
 
 ; Prints new line
