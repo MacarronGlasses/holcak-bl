@@ -52,11 +52,10 @@ void vprintf(const char *fmt, va_list args) {
 				length--;
 				goto format;
 			case 'x':
-				uint32_t value = va_arg(args, uint32_t);
-				putx(value, 2 << length, &cursor);
+				putx(va_arg(args, uint32_t), 2 << length, &cursor);
 				break;
 			case 'p':
-				putx(va_arg(args, uintptr_t), sizeof(uintptr_t)*2, &cursor);
+				putx(va_arg(args, uintptr_t), 8, &cursor);
 				break;
 			case '%':
 				putc('%', &cursor);
