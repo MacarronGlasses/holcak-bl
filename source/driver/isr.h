@@ -13,6 +13,6 @@ typedef struct __packed {
 typedef void(*isr_handler_t)(isr_frame_t);
 
 void isr_handler_init(uint8_t id, isr_handler_t handler);
-void isr_handler(isr_frame_t frame);
+__cdecl void isr_handler(isr_frame_t frame);
 
 #endif//DRIVER_ISR_H_

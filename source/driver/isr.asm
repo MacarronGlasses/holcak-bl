@@ -2,7 +2,6 @@
 
 isr_common:
 	pusha
-
 	xor eax, eax
 	mov ax, ds
 	push eax
@@ -19,7 +18,6 @@ isr_common:
 	mov es, ax
 	mov fs, ax
 	mov gs, ax
-
 	popa
 	add esp, 0x08
 	iret

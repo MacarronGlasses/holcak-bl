@@ -1,7 +1,7 @@
 #include "isr.h"
 #include "idt.h"
 
-static idt_gate_t idt_table[256];
+static idt_gate_t idt_table[0x100];
 static idt_descriptor_t idt_descriptor;
 
 void idt_init(void) {
@@ -10,5 +10,5 @@ void idt_init(void) {
 }
 
 void idt_gate_init(uint8_t id, void(*base)(void), uint8_t flags) {
-	idt_table[id] = (idt_gate_t){(uint32_t)base >> 0, 0x08, 0x00, flags, (uint32_t)base >> 16};
+	idt_table[id] = (idt_gate_t){(uint32_t)base >> 0x00, 0x08, 0x00, flags, (uint32_t)base >> 0x10};
 }
