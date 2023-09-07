@@ -79,8 +79,9 @@ ${GENERATE}: tools/generate.py
 	./$< $(abspath source/)
 
 start: build/build.img
-	qemu-system-i386 -M q35 -m 256M -drive format=raw,file=build/build.img -boot c
-#	qemu-system-i386 -M q35 -m 256M -drive format=raw,if=floppy,file=build/build.img
+#	qemu-system-i386 -M q35 -m 256M -drive format=raw,file=build/build.img,media=disk -boot c
+	qemu-system-i386 -M pc -m 256M -drive format=raw,file=build/build.img,media=disk -boot c
+#	qemu-system-i386 -M pc -m 256M -drive format=raw,if=floppy,file=build/build.img
 
 debug: build/build.img
 	qemu-system-i386 -M q35 -m 256M -drive format=raw,file=build/build.img -boot c -s -S &
