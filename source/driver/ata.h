@@ -16,6 +16,7 @@
 #define ATA_CONTROL(Base)  ((Base) + 0x0206)
 
 #define ATA_IDENTIFY 0xEC
+#define ATA_FLUSH    0xE7
 #define ATA_READ28   0x20
 #define ATA_WRITE28  0x30
 
