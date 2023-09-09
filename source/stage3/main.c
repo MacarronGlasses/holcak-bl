@@ -1,9 +1,9 @@
 #include <stdnoreturn.h>
-#include <driver/ata.h>
 #include <driver/idt.h>
 #include <driver/isr.h>
 #include <driver/pic.h>
 #include <driver/pci.h>
+#include <driver/ata.h>
 #include <global.h>
 #include "printf.h"
 #include "info.h"
@@ -41,7 +41,7 @@ __cdecl void main(void) {
 	printf("%hhx\n", ata_init(0x170, false));
 #else
 	if (ata_init(0x1F0, true)) {
-		panic("Error: Could not initialize PATA!\n");
+		panic("Error: Could not initialize ATA!\n");
 	}
 	char buffer[512];
 	if (ata_read28(0x1F0, true, 0x00, buffer, 0x01) != 0x01) {

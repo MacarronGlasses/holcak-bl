@@ -53,8 +53,9 @@ disk_reset:
 
 ; Reads sectors from disk
 ; Parameters:
-;   eax   - LBA pointing to the beginning of the data
+;   eax   - LBA low pointing to the beginning of the data
 ;   ebx   - Address of buffer [offset 16] [segment 16]
+;   cx    - LBA high pointing to the beginning of the data
 ;   si    - Number of sectors to read
 ;   dl    - Disk number
 [bits 16]
@@ -63,8 +64,14 @@ disk_read:
 	mov cx, [disk_info.extensions]
 	test cx, 0x01
 	pop cx
+	jnz disk_read_0x42
+
+	test cx, cx
 	jz disk_read_0x02
-	jmp disk_read_0x42
+
+.error:
+	mov al, '5'
+	jmp pute
 
 ; Reads sectors from disk using int 0x13, ah=0x02
 ; Parameters:
@@ -173,8 +180,9 @@ section .text
 
 ; Reads sectors from disk
 ; Parameters:
-;   eax   - LBA pointing to the beginning of the data
+;   eax   - LBA low pointing to the beginning of the data
 ;   ebx   - Address of buffer [offset 16] [segment 16]
+;   cx    - LBA high pointing to the beginning of the data
 ;   si    - Number of sectors to read
 ;   dl    - Disk number
 ; References:
@@ -182,30 +190,36 @@ section .text
 ;   https://en.wikipedia.org/wiki/INT_13H#INT_13h_AH=42h:_Extended_Read_Sectors_From_Drive
 [bits 16]
 disk_read_0x42:
-	push ax
-	push si
+	pusha
+	mov di, disk_packet
+	mov byte  [di+0x00], 0x10
+	mov byte  [di+0x01], 0x00
+	mov word  [di+0x02], si
+	mov dword [di+0x04], ebx
+	mov dword [di+0x08], eax
+	mov word  [di+0x0C], cx
 
-	mov word  [disk_packet.sectors],  si
-	mov dword [disk_packet.buffer],   ebx
-	mov dword [disk_packet.lba_lo],   eax
+	xor cx, cx
+	mov word  [di+0x0E], cx
 
 	mov si, disk_packet
 	mov ah, 0x42
 	int 0x13
 	jc .error
 
-	pop si
-	pop ax
+	popa
 	ret
 
 .error:
 	mov al, '4'
 	jmp pute
 
+section .bss
 disk_packet:
-	.size:     db 0x10
-	.reserved: db 0x00
-	.sectors:  dw 0x00
-	.buffer:   dd 0x00
-	.lba_lo:   dd 0x00
-	.lba_hi:   dd 0x00
+	.size:     resb 0x01
+	.reserved: resb 0x01
+	.sectors:  resw 0x01
+	.buffer:   resd 0x01
+	.lba_lo:   resd 0x01
+	.lba_hi:   resd 0x01
+section .text

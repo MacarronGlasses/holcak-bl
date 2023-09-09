@@ -1,5 +1,4 @@
 [org 0x7C00]
-; TODO: Add LBA 48-bit support
 
 [bits 16]
 jmp start_16
@@ -57,7 +56,8 @@ start_16:
 .continue:
 	; Load stage2 into memory
 	call disk_init
-	mov eax, [stage2_address]
+	mov eax, [stage2_address.lo]
+	mov cx,  [stage2_address.hi]
 	mov ebx, (stage2_buffer << 0x0C) | (stage2_buffer % 0x10)
 	mov si,  [stage2_sectors]
 	call disk_read
@@ -65,8 +65,10 @@ start_16:
 	; Jump to stage2
 	jmp stage2_buffer
 
-times 0x01B8-($-$$) db 0x00
-stage2_address: dd  0x00
+times 0x01B6-($-$$) db 0x00
+stage2_address:
+	.lo: dd 0x00
+	.hi: dw 0x00
 stage2_sectors: dw  0x00
 stage2_buffer:  equ 0x1000
 
