@@ -9,7 +9,7 @@ times 0x03-($-$$) db 0x00
 ; References:	
 ;   https://en.wikipedia.org/wiki/BIOS_parameter_block#DOS_4.0_EBPB
 [bits 16]
-start_bdb:
+start_bpb:
 	.oem_id:               db "HOLCAK  "
 	.bytes_per_sector:     dw 0x0200
 	.sectors_per_cluster:  db 0x00
@@ -57,7 +57,7 @@ start_16:
 .continue:
 	; Load stage2 into memory
 	call disk_init
-	mov eax, [stage2_location]
+	mov eax, [stage2_address]
 	mov ebx, (stage2_buffer << 0x0C) | (stage2_buffer % 0x10)
 	mov si,  [stage2_sectors]
 	call disk_read
@@ -66,9 +66,9 @@ start_16:
 	jmp stage2_buffer
 
 times 0x01B8-($-$$) db 0x00
-stage2_location: dd  0x00
-stage2_sectors:  dw  0x00
-stage2_buffer:   equ 0x1000
+stage2_address: dd  0x00
+stage2_sectors: dw  0x00
+stage2_buffer:  equ 0x1000
 
 times 0x01BE-($-$$) db 0x00
 %macro partition_make 1
@@ -82,11 +82,9 @@ partition_%1:
 	.lba_start:    dd 0x00
 	.sectors:      dd 0x00
 %endmacro
-
 partition_make 1
 partition_make 2
 partition_make 3
 partition_make 4
-
 times 0x01FE-($-$$) db 0x00
 dw 0xAA55

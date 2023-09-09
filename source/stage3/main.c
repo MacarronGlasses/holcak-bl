@@ -1,9 +1,9 @@
 #include <stdnoreturn.h>
+#include <driver/ata.h>
 #include <driver/idt.h>
 #include <driver/isr.h>
 #include <driver/pic.h>
 #include <driver/pci.h>
-#include <driver/ata.h>
 #include <global.h>
 #include "printf.h"
 #include "info.h"
@@ -34,7 +34,6 @@ __cdecl void main(void) {
 	}
 	idt_init();
 	printf("IDT enabled!\n");
-
 #if 0
 	printf("%hhx\n", ata_init(0x1F0, true));
 	printf("%hhx\n", ata_init(0x1F0, false));
@@ -42,20 +41,13 @@ __cdecl void main(void) {
 	printf("%hhx\n", ata_init(0x170, false));
 #else
 	if (ata_init(0x1F0, true)) {
-		panic("Error: Could not initialize ATA!\n");
+		panic("Error: Could not initialize PATA!\n");
 	}
-#if 0
 	char buffer[512];
 	if (ata_read28(0x1F0, true, 0x00, buffer, 0x01) != 0x01) {
 		panic("Error: Could not read from hard disk!\n");
 	}
 	buffer[11] = '\0';
 	printf("%s\n", &buffer[0x03]);
-#else
-	const char buffer[512] = "Hello, World!";
-	if (ata_write28(0x1F0, true, 0x00, buffer, 0x01) != 0x01) {
-		panic("Error: Could not write to hard disk!\n");
-	}
-#endif
 #endif
 }
