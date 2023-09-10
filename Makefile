@@ -14,9 +14,11 @@ GENERATE:=$(addprefix source/,driver/isrg.h driver/isrg.c)
 always: ${GENERATE} build/build.img
 
 build/build.img: build/stage1/build.bin build/stage2/build.bin tools/install.py
-	dd if=/dev/zero of=$@ bs=512 count=2880
-	dd if=build/stage1/build.bin of=$@ conv=notrunc
+	dd if=/dev/zero of=$@ bs=512 count=65536
 	./tools/install.py $@ build/stage1/build.bin build/stage2/build.bin
+	./script/fdisk.sh $(abspath $@)
+	mkfs.fat -F 16 $@ -n FAT16 --offset 2048
+	mcopy -i build/build.img@@1M script/debug.gdb "::test.txt"
 
 build/stage1/build.bin: $(shell find source/stage1/ -type f \( -name '*.asm' -o -name '*.inc' \))
 	mkdir -p ${@D}

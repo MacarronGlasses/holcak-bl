@@ -46,10 +46,10 @@ start_16:
 
 	; Relocate itself to lower address
 	cld
-	mov cx, 0x50
+	mov cx, 0x200
 	mov si, 0x7C00
 	mov di, 0x0500
-	rep movsd
+	rep movsb
 	jmp 0x0000:.continue
 
 [bits 16]
@@ -81,7 +81,7 @@ partition_%1:
 	.system_id:    db 0x00
 	.chs_end_lo:   db 0x00
 	.chs_end_hi:   dw 0x00
-	.lba_start:    dd 0x00
+	.address:      dd 0x00
 	.sectors:      dd 0x00
 %endmacro
 partition_make 1

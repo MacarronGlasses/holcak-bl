@@ -4,6 +4,7 @@
 #include <driver/pic.h>
 #include <driver/pci.h>
 #include <driver/ata.h>
+#include <driver/mbr.h>
 #include <global.h>
 #include "printf.h"
 #include "info.h"
@@ -34,20 +35,12 @@ __cdecl void main(void) {
 	}
 	idt_init();
 	printf("IDT enabled!\n");
-#if 0
-	printf("%hhx\n", ata_init(0x1F0, true));
-	printf("%hhx\n", ata_init(0x1F0, false));
-	printf("%hhx\n", ata_init(0x170, true));
-	printf("%hhx\n", ata_init(0x170, false));
-#else
-	if (ata_init(0x1F0, true)) {
-		panic("Error: Could not initialize ATA!\n");
+	mbr_partition_t *partitions = (void*)0x06BE;
+	for (uint8_t i = 0; i < 4; i++) {
+		printf("MBR partition %hhx\n", i);
+		printf("    Bootable: %hhx\n", partitions[i].bootable);
+		printf("    SystemID: %hhx\n", partitions[i].system_id);
+		printf("    Address:  %x\n", partitions[i].address);
+		printf("    Sectors:  %x\n", partitions[i].sectors);
 	}
-	char buffer[512];
-	if (ata_read28(0x1F0, true, 0x00, buffer, 0x01) != 0x01) {
-		panic("Error: Could not read from hard disk!\n");
-	}
-	buffer[11] = '\0';
-	printf("%s\n", &buffer[0x03]);
-#endif
 }
