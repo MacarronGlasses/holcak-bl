@@ -86,8 +86,8 @@ mem_init:
 	cli
 	hlt
 
-.msg0: db "Error: Memory initialization failed!", 0x00
-.msg1: db "Memory detected!", endl, 0x00
+.msg0: db "Error: MEM initialization failed!", 0x00
+.msg1: db "MEM detected!", endl, 0x00
 .msg2: db "    Length:    0x", 0x00
 .msg3: db "    Block:     0x", 0x00
 .msg4: db "    Node 0x", 0x00
@@ -156,8 +156,8 @@ mem_init_0xE820:
 	cli
 	hlt
 
-.msg0: db "Error: Memory initialization failed!", 0x00
-.msg1: db "Memory info length exceeded maximum!", endl, 0x00
+.msg0: db "Error: MEM initialization failed!", 0x00
+.msg1: db "MEM info length exceeded maximum!", endl, 0x00
 
 ; Prints information about memory node
 ; Parameters:

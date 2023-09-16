@@ -6,9 +6,9 @@
 #define PIC1_OFFSET            0x20
 #define PIC2_OFFSET            (PIC1_OFFSET + 0x08)
 
-#define PIC1_CMD               0x20
+#define PIC1_COMMAND           0x20
 #define PIC1_DATA              0x21
-#define PIC2_CMD               0xA0
+#define PIC2_COMMAND           0xA0
 #define PIC2_DATA              0xA1
 
 #define PIC_ICW1_ICW4          0x01
@@ -26,9 +26,9 @@
 #define PIC_ICW4_BUFFER        0x08
 #define PIC_ICW4_SFNM          0x10
 
-#define PIC_CMD_EOI            0x20
-#define PIC_CMD_IRR            0x0A
-#define PIC_CMD_ISR            0x0B
+#define PIC_COMMAND_EOI        0x20
+#define PIC_COMMAND_IRR        0x0A
+#define PIC_COMMAND_ISR        0x0B
 
 void pic_init(void);
 void pic_stop(void);

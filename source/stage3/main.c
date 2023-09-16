@@ -1,4 +1,5 @@
 #include <stdnoreturn.h>
+#include <hbllib/disk.h>
 #include <driver/idt.h>
 #include <driver/isr.h>
 #include <driver/pic.h>
@@ -35,12 +36,55 @@ __cdecl void main(void) {
 	}
 	idt_init();
 	printf("IDT enabled!\n");
-	mbr_partition_t *partitions = (void*)0x06BE;
-	for (uint8_t i = 0; i < 4; i++) {
-		printf("MBR partition %hhx\n", i);
-		printf("    Bootable: %hhx\n", partitions[i].bootable);
-		printf("    SystemID: %hhx\n", partitions[i].system_id);
-		printf("    Address:  %x\n", partitions[i].address);
-		printf("    Sectors:  %x\n", partitions[i].sectors);
+	struct {
+		disk_t data[0x0100];
+		uint16_t length;
+	} disks;
+	disks.length = 0x00;
+	for (uint16_t id = 0x00; id < PCI_ID(pci_info.buses, 0x00, 0x00); ) {
+		if ((pci_read(id, 0x00) & UINT16_MAX) == UINT16_MAX) {
+			id += 0x08;
+			continue;
+		}
+		bool skip = !((pci_read(id, 0x0C) >> 0x10) & 0x80);
+		for (uint16_t to = id + (skip ? 0x01 : 0x08); id < to; id++) {
+			uint32_t info = pci_read(id, 0x08);
+			switch (info >> 0x10) {
+				case 0x0101: {
+					if (disks.length == sizeof(disks.data) / sizeof(*disks.data)) {
+						printf("Error: Number of media exceeded maximum (%hx)!\n", disks.length);
+						goto exceeded;
+					}
+					printf("IDE detected!\n");
+					printf("    Interface: %hhx\n", info >> 0x08);
+					if ((info >> 0x08) & 0x01) {
+						panic("Error: IDE PCI native mode isn't implemented yet!");
+					} else for (uint8_t i = 0x00; i < 0x04; i++) {
+						if (ata_init(i & 0x02 ? 0x01F0 : 0x0170, i & 0x01)) {
+							continue;
+						}
+						printf("ATA detected!\n");
+						printf("    Address:   %hx\n", i & 0x02 ? 0x01F0 : 0x0170);
+						printf("    Master:    %hx\n", i & 0x01);
+						disks.data[disks.length++] = (disk_t){
+							.type = DISK_TYPE_ATA,
+							.data.ata = {i & 0x02 ? 0x1F0 : 0x170, i & 0x01},
+							0x00, UINT64_MAX,
+						};
+					}
+				} break;
+				case 0x0106: {
+					panic("Error: SATA isn't implemented yet!");
+				} break;
+			}
+		}
+		id += skip ? 0x07 : 0x00;
 	}
+exceeded:
+	char buffer[0x0100];
+	if (disk_read(disks.data[0], 0x00, buffer, 0x01) != 0x01) {
+		panic("Error: Reading from disk failed!\n");
+	}
+	buffer[0x0B] = '\0';
+	printf("%s\n", &buffer[0x03]);
 }

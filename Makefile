@@ -7,11 +7,12 @@ STAGE2:=$(subst source/stage2/,build/stage2/,$(addsuffix .o,$(shell find source/
 STAGE3:=$(subst source/stage3/,build/stage3/,$(addsuffix .o,$(shell find source/stage3/ -type f \( -name '*.c' -o -name '*.asm' \))))
 DRIVER:=$(subst source/driver/,build/driver/,$(addsuffix .o,$(shell find source/driver/ -type f \( -name '*.c' -o -name '*.asm' \))))
 STDLIB:=$(subst source/stdlib/,build/stdlib/,$(addsuffix .o,$(shell find source/stdlib/ -type f \( -name '*.c' -o -name '*.asm' \))))
+HBLLIB:=$(subst source/hbllib/,build/hbllib/,$(addsuffix .o,$(shell find source/hbllib/ -type f \( -name '*.c' -o -name '*.asm' \))))
 
 GENERATE:=$(addprefix source/,driver/isrg.h driver/isrg.c)
 
-.PHONY: always clean start debug
-always: ${GENERATE} build/build.img
+.PHONY: build clean start debug
+build: ${GENERATE} build/build.img
 
 build/build.img: build/stage1/build.bin build/stage2/build.bin tools/install.py
 	dd if=/dev/zero of=$@ bs=512 count=65536
@@ -24,7 +25,7 @@ build/stage1/build.bin: $(shell find source/stage1/ -type f \( -name '*.asm' -o 
 	mkdir -p ${@D}
 	${AS} -fbin -I source/stage1/ -o $@ $(filter %.asm,$^)
 
-build/stage2/build.bin: ${STAGE2} ${STAGE3} ${DRIVER} ${STDLIB}
+build/stage2/build.bin: ${STAGE2} ${STAGE3} ${DRIVER} ${STDLIB} ${HBLLIB}
 	@mkdir -p ${@D}
 	${LD} -T source/linker.ld --gc-sections -Map build/stage2/build.map -nostdlib -melf_i386 -o build/stage2/build.elf $(filter %.o,$^)
 	${OBJCOPY} -O binary --strip-debug build/stage2/build.elf $@
@@ -76,6 +77,18 @@ build/stdlib/%.c.o: source/stdlib/%.c
 build/stdlib/%.asm.o: source/stdlib/%.asm
 	@mkdir -p ${@D}
 	${AS} -I source/stdlib/ -g -felf32 -Fdwarf -MD $(addsuffix .d,$(basename $@)) -o $@ $<
+
+ifeq (1,$(shell if [ -d build/hbllib/ ]; then echo 1; fi))
+    -include $(shell find build/hbllib/ -type f -name '*.d')
+endif
+
+build/hbllib/%.c.o: source/hbllib/%.c
+	@mkdir -p ${@D}
+	${CC} -I ~/toolchain/gcc-build/gcc/include/ -I source/ -I source/hbllib/ -Wall -Wextra -pedantic -std=c17 -ggdb -ffreestanding -nostartfiles -MMD -MP -fno-pie -fno-pic -nostdlib -nostdinc -c -m32 -o $@ $<
+
+build/hbllib/%.asm.o: source/hbllib/%.asm
+	@mkdir -p ${@D}
+	${AS} -I source/hbllib/ -g -felf32 -Fdwarf -MD $(addsuffix .d,$(basename $@)) -o $@ $<
 
 ${GENERATE}: tools/generate.py
 	./$< $(abspath source/)

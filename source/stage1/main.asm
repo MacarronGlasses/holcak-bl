@@ -65,12 +65,16 @@ start_16:
 	; Jump to stage2
 	jmp stage2_buffer
 
-times 0x01B6-($-$$) db 0x00
+times 0x01B0-($-$$) db 0x00
 stage2_address:
 	.lo: dd 0x00
 	.hi: dw 0x00
 stage2_sectors: dw  0x00
 stage2_buffer:  equ 0x1000
+
+times 0x01B8-($-$$) db 0x00
+signature: dd 0x00
+reserved:  dw 0x00
 
 times 0x01BE-($-$$) db 0x00
 %macro partition_make 1

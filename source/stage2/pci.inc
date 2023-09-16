@@ -11,9 +11,9 @@ pci_init:
 	xor edi, edi
 	int 0x1A
 	test ah, ah
-	jnz .done
+	jnz .zero
 	cmp edx, 0x20494350
-	jne .done
+	jne .zero
 
 	mov si, .msg0
 	call puts
@@ -42,6 +42,13 @@ pci_init:
 	mov bx, cx
 	call putx32
 	call putnl
+	jmp .done	
+
+.zero:
+	xor eax, eax
+	mov [pci_info.entry], eax
+	mov [pci_info.version], eax
+	mov [pci_info.buses], al
 
 .done:
 	popfd

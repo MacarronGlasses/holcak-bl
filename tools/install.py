@@ -11,7 +11,7 @@ with open(argv[1], "rb+") as f:
 	assert size == 0x200
 	f.write(open(argv[2], "rb").read())
 	f.write(open(argv[3], "rb").read())
-	f.seek(0x01B6)
+	f.seek(0x01B0)
 	size = path.getsize(argv[3])
 	assert size < 0x7EFFF
 	f.write(int(0x01).to_bytes(6, 'little'))

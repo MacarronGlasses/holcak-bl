@@ -27,7 +27,7 @@ static void puts(char *str, uint16_t *cursor) {
 	for (; *str; putc(*str++, cursor));
 }
 
-static void putx(uint32_t value, uint8_t bytes, uint16_t *cursor) {
+static void putx(uint64_t value, uint8_t bytes, uint16_t *cursor) {
 	puts("0x", cursor);
 	for (; bytes > 0; bytes--) {
 		char chr = ((value >> ((bytes - 1) << 2)) & 0x0F) + '0';
@@ -51,8 +51,12 @@ void vprintf(const char *fmt, va_list args) {
 			case 'h':
 				length--;
 				goto format;
+			case 'l':
+				length++;
+				goto format;
 			case 'x':
-				putx(va_arg(args, uint32_t), 2 << length, &cursor);
+				uint64_t value = length >= 3 ? va_arg(args, uint64_t) : va_arg(args, uint32_t);
+				putx(value, 2 << length, &cursor);
 				break;
 			case 'p':
 				putx(va_arg(args, uintptr_t), 8, &cursor);

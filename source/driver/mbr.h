@@ -5,7 +5,7 @@
 typedef struct __packed {
 	uint8_t bootable;
 	chs_t chs_start;
-	uint8_t system_id;
+	uint8_t system;
 	chs_t chs_end;
 	uint32_t address;
 	uint32_t sectors;

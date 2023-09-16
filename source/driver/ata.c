@@ -80,25 +80,28 @@ uint16_t ata_write28(uint16_t base, bool master, uint32_t address, const void *b
 			port16_out(ATA_PORT_DATA(base), *((uint16_t*)buffer));
 			buffer = ((uint16_t*)buffer) + 1;
 		}
-		port8_out(ATA_PORT_COMMAND(base), ATA_COMMAND_FLUSH);
+		port8_out(ATA_PORT_COMMAND(base), ATA_COMMAND_FLUSH28);
 	}
 
 	return sectors == 0x00 ? UINT8_MAX + 0x01 : sectors;
 }
+uint32_t ata_read48(uint16_t base, bool master, uint64_t address, void *buffer, uint16_t sectors) {
+	if (address & 0xFFFF000000000000) {
+		return 0x00;
+	}
 
-uint32_t ata_read48(uint16_t base, bool master, uint32_t address_lo, uint16_t address_hi, void *buffer, uint16_t sectors) {
 	port8_out(ATA_PORT_DEVICE(base), master ? 0x40 : 0x50);
 	port8_out(ATA_PORT_ERROR(base), 0x00);
 
 	port8_out(ATA_PORT_SECTORS(base), sectors >> 0x08);
-	port8_out(ATA_PORT_ADDRESS_LO(base), address_hi >> 0x00);
-	port8_out(ATA_PORT_ADDRESS_MI(base), address_hi >> 0x08);
-	port8_out(ATA_PORT_ADDRESS_HI(base), address_hi >> 0x10);
+	port8_out(ATA_PORT_ADDRESS_LO(base), address >> 0x18);
+	port8_out(ATA_PORT_ADDRESS_MI(base), address >> 0x20);
+	port8_out(ATA_PORT_ADDRESS_HI(base), address >> 0x28);
 
 	port8_out(ATA_PORT_SECTORS(base), sectors >> 0x00);
-	port8_out(ATA_PORT_ADDRESS_LO(base), address_lo >> 0x00);
-	port8_out(ATA_PORT_ADDRESS_MI(base), address_lo >> 0x08);
-	port8_out(ATA_PORT_ADDRESS_HI(base), address_lo >> 0x10);
+	port8_out(ATA_PORT_ADDRESS_LO(base), address >> 0x00);
+	port8_out(ATA_PORT_ADDRESS_MI(base), address >> 0x08);
+	port8_out(ATA_PORT_ADDRESS_HI(base), address >> 0x10);
 
 	port8_out(ATA_PORT_COMMAND(base), ATA_COMMAND_READ48);
 	for (uint32_t i = 0x00; i < (sectors == 0x00 ? UINT16_MAX + 0x01 : sectors); i++) {
@@ -116,19 +119,23 @@ uint32_t ata_read48(uint16_t base, bool master, uint32_t address_lo, uint16_t ad
 	return sectors == 0x00 ? UINT16_MAX + 0x01 : sectors;
 }
 
-uint32_t ata_write48(uint16_t base, bool master, uint32_t address_lo, uint16_t address_hi, const void *buffer, uint16_t sectors) {
+uint32_t ata_write48(uint16_t base, bool master, uint64_t address, const void *buffer, uint16_t sectors) {
+	if (address & 0xFFFF000000000000) {
+		return 0x00;
+	}
+
 	port8_out(ATA_PORT_DEVICE(base), master ? 0x40 : 0x50);
 	port8_out(ATA_PORT_ERROR(base), 0x00);
 
 	port8_out(ATA_PORT_SECTORS(base), sectors >> 0x08);
-	port8_out(ATA_PORT_ADDRESS_LO(base), address_hi >> 0x00);
-	port8_out(ATA_PORT_ADDRESS_MI(base), address_hi >> 0x08);
-	port8_out(ATA_PORT_ADDRESS_HI(base), address_hi >> 0x10);
+	port8_out(ATA_PORT_ADDRESS_LO(base), address >> 0x18);
+	port8_out(ATA_PORT_ADDRESS_MI(base), address >> 0x20);
+	port8_out(ATA_PORT_ADDRESS_HI(base), address >> 0x28);
 
 	port8_out(ATA_PORT_SECTORS(base), sectors >> 0x00);
-	port8_out(ATA_PORT_ADDRESS_LO(base), address_lo >> 0x00);
-	port8_out(ATA_PORT_ADDRESS_MI(base), address_lo >> 0x08);
-	port8_out(ATA_PORT_ADDRESS_HI(base), address_lo >> 0x10);
+	port8_out(ATA_PORT_ADDRESS_LO(base), address >> 0x00);
+	port8_out(ATA_PORT_ADDRESS_MI(base), address >> 0x08);
+	port8_out(ATA_PORT_ADDRESS_HI(base), address >> 0x10);
 
 	port8_out(ATA_PORT_COMMAND(base), ATA_COMMAND_WRITE48);
 	for (uint32_t i = 0x00; i < (sectors == 0x00 ? UINT16_MAX + 0x01 : sectors); i++) {
@@ -141,7 +148,7 @@ uint32_t ata_write48(uint16_t base, bool master, uint32_t address_lo, uint16_t a
 			port16_out(ATA_PORT_DATA(base), *((uint16_t*)buffer));
 			buffer = ((uint16_t*)buffer) + 1;
 		}
-		port8_out(ATA_PORT_COMMAND(base), ATA_COMMAND_FLUSH);
+		port8_out(ATA_PORT_COMMAND(base), ATA_COMMAND_FLUSH48);
 	}
 
 	return sectors == 0x00 ? UINT16_MAX + 0x01 : sectors;

@@ -2,9 +2,9 @@
 #include "pic.h"
 
 void pic_init(void) {
-	port8_out(PIC1_CMD, PIC_ICW1_INIT | PIC_ICW1_EDGE | PIC_ICW1_ICW4);
+	port8_out(PIC1_COMMAND, PIC_ICW1_INIT | PIC_ICW1_EDGE | PIC_ICW1_ICW4);
 	port_wait();
-	port8_out(PIC2_CMD, PIC_ICW1_INIT | PIC_ICW1_EDGE | PIC_ICW1_ICW4);
+	port8_out(PIC2_COMMAND, PIC_ICW1_INIT | PIC_ICW1_EDGE | PIC_ICW1_ICW4);
 	port_wait();
 
 	port8_out(PIC1_DATA, PIC1_OFFSET);
@@ -40,24 +40,24 @@ void pic_mask(uint8_t irq, bool mask) {
 }
 
 void pic_eoi(uint8_t irq) {
-	port8_out(irq < 0x08 ? PIC1_CMD : PIC2_CMD, PIC_CMD_EOI);
+	port8_out(irq < 0x08 ? PIC1_COMMAND : PIC2_COMMAND, PIC_COMMAND_EOI);
 	port_wait();
 }
 
 uint16_t pic_irr(void) {
-	port8_out(PIC1_CMD, PIC_CMD_IRR);
+	port8_out(PIC1_COMMAND, PIC_COMMAND_IRR);
 	port_wait();
-	port8_out(PIC2_CMD, PIC_CMD_IRR);
+	port8_out(PIC2_COMMAND, PIC_COMMAND_IRR);
 	port_wait();
 
-	return port8_in(PIC1_CMD) | (port8_in(PIC2_CMD) << 0x08);
+	return port8_in(PIC1_COMMAND) | (port8_in(PIC2_COMMAND) << 0x08);
 }
 
 uint16_t pic_isr(void) {
-	port8_out(PIC1_CMD, PIC_CMD_ISR);
+	port8_out(PIC1_COMMAND, PIC_COMMAND_ISR);
 	port_wait();
-	port8_out(PIC2_CMD, PIC_CMD_ISR);
+	port8_out(PIC2_COMMAND, PIC_COMMAND_ISR);
 	port_wait();
 
-	return port8_in(PIC1_CMD) | (port8_in(PIC2_CMD) << 0x08);
+	return port8_in(PIC1_COMMAND) | (port8_in(PIC2_COMMAND) << 0x08);
 }
