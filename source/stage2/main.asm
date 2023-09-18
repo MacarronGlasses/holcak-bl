@@ -11,7 +11,6 @@ section .text
 ; TODO: Add keyboard controller method to A20 line
 ; TODO: Add more memory detection methods (https://wiki.osdev.org/Detecting_Memory_(x86)#Other_Methods)
 ; TODO: Enable extended CPU features
-; TODO: Add printf function
 
 section .entry
 [global start_16]

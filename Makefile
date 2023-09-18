@@ -7,7 +7,7 @@ STAGE2:=$(subst source/stage2/,build/stage2/,$(addsuffix .o,$(shell find source/
 STAGE3:=$(subst source/stage3/,build/stage3/,$(addsuffix .o,$(shell find source/stage3/ -type f \( -name '*.c' -o -name '*.asm' \))))
 DRIVER:=$(subst source/driver/,build/driver/,$(addsuffix .o,$(shell find source/driver/ -type f \( -name '*.c' -o -name '*.asm' \))))
 STDLIB:=$(subst source/stdlib/,build/stdlib/,$(addsuffix .o,$(shell find source/stdlib/ -type f \( -name '*.c' -o -name '*.asm' \))))
-HBLLIB:=$(subst source/hbllib/,build/hbllib/,$(addsuffix .o,$(shell find source/hbllib/ -type f \( -name '*.c' -o -name '*.asm' \))))
+SYSLIB:=$(subst source/syslib/,build/syslib/,$(addsuffix .o,$(shell find source/syslib/ -type f \( -name '*.c' -o -name '*.asm' \))))
 
 GENERATE:=$(addprefix source/,driver/isrg.h driver/isrg.c)
 
@@ -25,7 +25,7 @@ build/stage1/build.bin: $(shell find source/stage1/ -type f \( -name '*.asm' -o 
 	mkdir -p ${@D}
 	${AS} -fbin -I source/stage1/ -o $@ $(filter %.asm,$^)
 
-build/stage2/build.bin: ${STAGE2} ${STAGE3} ${DRIVER} ${STDLIB} ${HBLLIB}
+build/stage2/build.bin: ${STAGE2} ${STAGE3} ${DRIVER} ${STDLIB} ${SYSLIB}
 	@mkdir -p ${@D}
 	${LD} -T source/linker.ld --gc-sections -Map build/stage2/build.map -nostdlib -melf_i386 -o build/stage2/build.elf $(filter %.o,$^)
 	${OBJCOPY} -O binary --strip-debug build/stage2/build.elf $@
@@ -78,17 +78,17 @@ build/stdlib/%.asm.o: source/stdlib/%.asm
 	@mkdir -p ${@D}
 	${AS} -I source/stdlib/ -g -felf32 -Fdwarf -MD $(addsuffix .d,$(basename $@)) -o $@ $<
 
-ifeq (1,$(shell if [ -d build/hbllib/ ]; then echo 1; fi))
-    -include $(shell find build/hbllib/ -type f -name '*.d')
+ifeq (1,$(shell if [ -d build/syslib/ ]; then echo 1; fi))
+    -include $(shell find build/syslib/ -type f -name '*.d')
 endif
 
-build/hbllib/%.c.o: source/hbllib/%.c
+build/syslib/%.c.o: source/syslib/%.c
 	@mkdir -p ${@D}
-	${CC} -I ~/toolchain/gcc-build/gcc/include/ -I source/ -I source/hbllib/ -Wall -Wextra -pedantic -std=c17 -ggdb -ffreestanding -nostartfiles -MMD -MP -fno-pie -fno-pic -nostdlib -nostdinc -c -m32 -o $@ $<
+	${CC} -I ~/toolchain/gcc-build/gcc/include/ -I source/ -I source/syslib/ -Wall -Wextra -pedantic -std=c17 -ggdb -ffreestanding -nostartfiles -MMD -MP -fno-pie -fno-pic -nostdlib -nostdinc -c -m32 -o $@ $<
 
-build/hbllib/%.asm.o: source/hbllib/%.asm
+build/syslib/%.asm.o: source/syslib/%.asm
 	@mkdir -p ${@D}
-	${AS} -I source/hbllib/ -g -felf32 -Fdwarf -MD $(addsuffix .d,$(basename $@)) -o $@ $<
+	${AS} -I source/syslib/ -g -felf32 -Fdwarf -MD $(addsuffix .d,$(basename $@)) -o $@ $<
 
 ${GENERATE}: tools/generate.py
 	./$< $(abspath source/)

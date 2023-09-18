@@ -2,10 +2,6 @@
 #define DRIVER_PCI_H_
 #include <stdint.h>
 
-#define PCI_PORT_ADDRESS   0x0CF8
-#define PCI_PORT_DATA      0x0CFC
-#define PCI_INVALID_VENDOR 0xFFFF
-
 #define PCI_ID(Bus, Device, Function) ((((uint16_t)(Bus) & 0xFF) << 0x08) | (((uint16_t)(Device) & 0x1F) << 0x03) | (((uint16_t)(Function) & 0x07) << 0x00))
 
 uint32_t pci_read(uint16_t id, uint8_t offset);

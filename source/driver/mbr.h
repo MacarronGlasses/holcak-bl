@@ -4,9 +4,9 @@
 
 typedef struct __packed {
 	uint8_t bootable;
-	chs_t chs_start;
+	uint16_t begin;
 	uint8_t system;
-	chs_t chs_end;
+	uint16_t limit;
 	uint32_t address;
 	uint32_t sectors;
 } mbr_partition_t;

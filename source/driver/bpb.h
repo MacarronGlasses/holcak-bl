@@ -4,6 +4,7 @@
 #include <stdint.h>
 
 typedef struct __packed {
+	char oem_id[0x08];
 	uint16_t bytes_per_sector;
 	uint8_t sectors_per_cluster;
 	uint16_t reserved_sectors;

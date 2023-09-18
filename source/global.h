@@ -2,13 +2,16 @@
 #define GLOBAL_H_
 #include <stdint.h>
 
+#ifndef _MSC_VER
+#define __align(B) __attiribute__((aligned(B)))
+#else //_MSC_VER
+#define __align(B) __declspec(align(B))
+#endif//_MSC_VER
+
 #define __packed __attribute__((packed))
 #define __cdecl  __attribute__((cdecl))
 
-typedef struct __packed {
-	uint8_t head;
-	uint16_t sector : 6;
-	uint16_t cylinder : 10;
-} chs_t;
+#define MAX(A, B) ((A) > (B) ? (A) : (B))
+#define MIN(A, B) ((A) < (B) ? (A) : (B))
 
 #endif//GLOBAL_H_
