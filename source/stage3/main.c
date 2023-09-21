@@ -1,9 +1,10 @@
 #include <stdnoreturn.h>
+#include <driver/pata.h>
+#include <driver/disk.h>
 #include <driver/idt.h>
 #include <driver/isr.h>
 #include <driver/pic.h>
 #include <driver/pci.h>
-#include <driver/ata.h>
 #include <driver/mbr.h>
 #include <global.h>
 #include "printf.h"
@@ -34,18 +35,18 @@ __cdecl void main(void) {
 	idt_init();
 	printf("IDT enabled!\n");
 
-	/*
-	char buffer[0x0200];
-	if (!ata_init(0x01F0, true)) {
-		panic("Error: Could not initialize ATA!");
+	disk_t disk = disk_pata(0x01F0, true);
+	if (disk.type == DISK_TYPE_ERROR) {
+		panic("Error: Could not initialize PATA!");
 	}
-	if (ata_read(0x01F0, true, 0x00, buffer, 0x01) != 0x01) {
-		panic("Error: Could not read from ATA!");
+	char buffer[0x0200];
+	if (disk_read(disk, 0x00, buffer, 0x01) != 0x01) {
+		panic("Error: Could not read from PATA!");
 	}
 	buffer[0x0C] = '\0';
 	printf("%s\n", &buffer[0x03]);
-	*/
 
+	/*
 	for (uint16_t id = 0x00; id < PCI_ID(pci_info.buses, 0x00, 0x00); ) {
 		if ((pci_read(id, 0x00) & UINT16_MAX) == UINT16_MAX) {
 			id += 0x08;
@@ -61,10 +62,10 @@ __cdecl void main(void) {
 					if ((info >> 0x08) & 0x01) {
 						panic("Error: IDE PCI native mode isn't implemented yet!");
 					} else for (uint8_t i = 0x00; i < 0x04; i++) {
-						if (!ata_init(i & 0x02 ? 0x01F0 : 0x0170, i & 0x01)) {
+						if (!pata_init(i & 0x02 ? 0x01F0 : 0x0170, i & 0x01)) {
 							continue;
 						}
-						printf("ATA detected!\n");
+						printf("PATA detected!\n");
 						printf("    Address:   %hx\n", i & 0x02 ? 0x01F0 : 0x0170);
 						printf("    Master:    %hx\n", i & 0x01);
 					}
@@ -76,4 +77,5 @@ __cdecl void main(void) {
 		}
 		id += skip ? 0x07 : 0x00;
 	}
+	*/
 }

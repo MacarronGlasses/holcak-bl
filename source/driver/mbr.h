@@ -9,6 +9,6 @@ typedef struct __packed {
 	uint16_t limit;
 	uint32_t address;
 	uint32_t sectors;
-} mbr_partition_t;
+} mbr_part_t;
 
 #endif//DRIVER_MBR_H_

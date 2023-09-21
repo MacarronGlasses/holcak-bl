@@ -42,28 +42,28 @@ void vprintf(const char *fmt, va_list args) {
 			uint8_t length = 2;
 		format:
 			switch (*++fmt) {
-			case 'c':
-				putc(va_arg(args, int), &cursor);
-				break;
-			case 's':
-				puts(va_arg(args, char*), &cursor);
-				break;
-			case 'h':
-				length--;
-				goto format;
-			case 'l':
-				length++;
-				goto format;
-			case 'x':
-				uint64_t value = length >= 3 ? va_arg(args, uint64_t) : va_arg(args, uint32_t);
-				putx(value, 2 << length, &cursor);
-				break;
-			case 'p':
-				putx(va_arg(args, uintptr_t), 8, &cursor);
-				break;
-			case '%':
-				putc('%', &cursor);
-				break;
+				case 'c': {
+					putc(va_arg(args, int), &cursor);
+				} break;
+				case 's': {
+					puts(va_arg(args, char*), &cursor);
+				} break;
+				case 'h': {
+					length--;
+				} goto format;
+				case 'l': {
+					length++;
+				} goto format;
+				case 'x': {
+					uint64_t value = length >= 3 ? va_arg(args, uint64_t) : va_arg(args, uint32_t);
+					putx(value, 2 << length, &cursor);
+				} break;
+				case 'p': {
+					putx(va_arg(args, uintptr_t), 8, &cursor);
+				} break;
+				case '%': {
+					putc('%', &cursor);
+				} break;
 			}
 		} else {
 			putc(*fmt, &cursor);
