@@ -2,7 +2,7 @@
 #define GLOBAL_H_
 #include <stdint.h>
 
-#ifndef _MSC_VER
+#ifdef _MSC_VER
 #define __align(B) __attiribute__((aligned(B)))
 #else //_MSC_VER
 #define __align(B) __declspec(align(B))

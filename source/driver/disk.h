@@ -17,10 +17,11 @@ typedef union {
 typedef struct {
 	disk_type_t type;
 	disk_data_t data;
+	mbr_partition_t partitions[4];
 } disk_t;
 
 disk_t disk_pata(uint16_t base, bool master);
-uint32_t disk_read(disk_t disk, uint64_t address, void *buffer, uint32_t sectors);
-uint32_t disk_write(disk_t disk, uint64_t address, const void *buffer, uint32_t sectors);
+uint32_t disk_read(disk_t *s, uint8_t partition, uint64_t address, void *buffer, uint32_t sectors);
+uint32_t disk_write(disk_t *s, uint8_t partition, uint64_t address, const void *buffer, uint32_t sectors);
 
 #endif//STAGE3_DISK_H_

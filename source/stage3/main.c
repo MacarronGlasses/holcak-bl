@@ -35,16 +35,29 @@ __cdecl void main(void) {
 	idt_init();
 	printf("IDT enabled!\n");
 
+	/*
 	disk_t disk = disk_pata(0x01F0, true);
 	if (disk.type == DISK_TYPE_ERROR) {
-		panic("Error: Could not initialize PATA!");
+		panic("Error: Could not initialize disk!");
 	}
 	char buffer[0x0200];
-	if (disk_read(disk, 0x00, buffer, 0x01) != 0x01) {
-		panic("Error: Could not read from PATA!");
+	if (disk_read(&disk, 0x00, 0x00, buffer, 0x01) != 0x01) {
+		panic("Error: Could not read from disk!");
 	}
 	buffer[0x0C] = '\0';
 	printf("%s\n", &buffer[0x03]);
+	*/
+
+	disk_t disk = disk_pata(0x01F0, true);
+	if (disk.type == DISK_TYPE_ERROR) {
+		panic("Error: Could not initialize disk!");
+	}
+	for (uint32_t i = 0; i < 0x01; i++) {
+		printf("%hhx\n", disk.partitions[i].bootable);
+		printf("%hhx\n", disk.partitions[i].system_id);
+		printf("%x\n", disk.partitions[i].address);
+		printf("%x\n", disk.partitions[i].sectors);
+	}
 
 	/*
 	for (uint16_t id = 0x00; id < PCI_ID(pci_info.buses, 0x00, 0x00); ) {

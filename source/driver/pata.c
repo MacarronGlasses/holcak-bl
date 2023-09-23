@@ -62,7 +62,7 @@ static uint16_t pata_read28(pata_info_t info, uint32_t address, void *buffer, ui
 	port8_out(PATA_PORT_ADDRESS_HI(info.base), address >> 0x10);
 
 	port8_out(PATA_PORT_COMMAND(info.base), PATA_COMMAND_READ28);
-	for (uint16_t i = 0; i < MAX(sectors, UINT8_MAX + 0x01); i++) {
+	for (uint16_t i = 0; i < MIN(sectors, UINT8_MAX + 0x01); i++) {
 		uint8_t status;
 		while (((status = port8_in(PATA_PORT_STATUS(info.base))) & 0x81) == 0x80);
 		if (status == 0x00 || status & 0x01) {
@@ -90,7 +90,7 @@ static uint16_t pata_write28(pata_info_t info, uint32_t address, const void *buf
 	port8_out(PATA_PORT_ADDRESS_HI(info.base), address >> 0x10);
 
 	port8_out(PATA_PORT_COMMAND(info.base), PATA_COMMAND_WRITE28);
-	for (uint16_t i = 0x00; i < MAX(sectors, UINT8_MAX + 0x01); i++) {
+	for (uint16_t i = 0x00; i < MIN(sectors, UINT8_MAX + 0x01); i++) {
 		uint8_t status;
 		while (((status = port8_in(PATA_PORT_STATUS(info.base))) & 0x81) == 0x80);
 		if (status == 0x00 || status & 0x01) {
@@ -123,7 +123,7 @@ static uint32_t pata_read48(pata_info_t info, uint64_t address, void *buffer, ui
 	port8_out(PATA_PORT_ADDRESS_HI(info.base), address >> 0x10);
 
 	port8_out(PATA_PORT_COMMAND(info.base), PATA_COMMAND_READ48);
-	for (uint32_t i = 0x00; i < MAX(sectors, UINT16_MAX + 0x01); i++) {
+	for (uint32_t i = 0x00; i < MIN(sectors, UINT16_MAX + 0x01); i++) {
 		uint8_t status;
 		while (((status = port8_in(PATA_PORT_STATUS(info.base))) & 0x81) == 0x80);
 		if (status == 0x00 || status & 0x01) {
@@ -156,7 +156,7 @@ static uint32_t pata_write48(pata_info_t info, uint64_t address, const void *buf
 	port8_out(PATA_PORT_ADDRESS_HI(info.base), address >> 0x10);
 
 	port8_out(PATA_PORT_COMMAND(info.base), PATA_COMMAND_WRITE48);
-	for (uint32_t i = 0x00; i < MAX(sectors, UINT16_MAX + 0x01); i++) {
+	for (uint32_t i = 0x00; i < MIN(sectors, UINT16_MAX + 0x01); i++) {
 		uint8_t status;
 		while (((status = port8_in(PATA_PORT_STATUS(info.base))) & 0x81) == 0x80);
 		if (status == 0x00 || status & 0x01) {

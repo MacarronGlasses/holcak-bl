@@ -9,10 +9,10 @@ if len(argv) < 4:
 with open(argv[1], "rb+") as f:
 	size = path.getsize(argv[2])
 	assert size == 0x200
-	f.write(open(argv[2], "rb").read())
-	f.write(open(argv[3], "rb").read())
-	f.seek(0x01B0)
+	f.write(open(argv[2], "rb").read(0x1B0))
 	size = path.getsize(argv[3])
 	assert size < 0x7EFFF
 	f.write(int(0x01).to_bytes(6, 'little'))
 	f.write(int((size + 0x1FF) // 0x200).to_bytes(2, 'little'))
+	f.seek(0x200)
+	f.write(open(argv[3], "rb").read())
