@@ -40,6 +40,10 @@ start_16:
 start_32:
 	; Initialize registers
 	cli
+	xor ax, ax
+	mov es, ax
+	mov ds, ax
+
 	mov ebp, stack_data + stack_size
 	mov esp, ebp
 
