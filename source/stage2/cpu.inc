@@ -11,12 +11,12 @@
 ;   https://www.felixcloutier.com/x86/cpuid
 ;   https://en.wikipedia.org/wiki/CPUID
 [bits 16]
-cpuid_init:
+cpu_init:
 	pushad
 	pushfd
 
 	; Check if CPUID exist
-	call cpuid_exist
+	call cpu_exist
 	jz .done
 	mov si, .msg0
 	call puts
@@ -71,7 +71,7 @@ cpuid_init:
 	mov [cpu_info.levels], eax
 	jmp .done
 
-.msg0: db "CPUID detected!", endl, 0x00
+.msg0: db "CPU detected!", endl, 0x00
 .msg1: db "    Vendor id: ", 0x00
 .msg2: db "    Feature _: 0x", 0x00
 
@@ -81,7 +81,7 @@ cpuid_init:
 ; References:
 ;   https://wiki.osdev.org/CPUID#Checking_CPUID_availability
 [bits 16]
-cpuid_exist:
+cpu_exist:
 	push eax
 	pushfd
 	pushfd

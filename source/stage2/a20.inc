@@ -2,7 +2,7 @@
 ; References:
 ;   https://wiki.osdev.org/A20_Line#Enabling
 [bits 16]
-a20_enable:
+a20_init:
 	push ax
 	call a20_test
 	jc .done

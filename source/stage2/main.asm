@@ -3,7 +3,7 @@ section .text
 
 [bits 16]
 %include "puts.inc"
-%include "cpuid.inc"
+%include "cpu.inc"
 %include "mem.inc"
 %include "pci.inc"
 %include "a20.inc"
@@ -23,10 +23,10 @@ start_16:
 	mov bp, sp
 
 	; Gather information from BIOS
-	call cpuid_init
+	call cpu_init
 	call pci_init
 	call mem_init
-	call a20_enable
+	call a20_init
 
 	; Enter protected mode
 	lgdt [gdt_info.desc]

@@ -10,7 +10,7 @@
 #define PATA_COMMAND_WRITE48       0x34
 #define PATA_COMMAND_FLUSH48       0xEA
 
-#define PATA_PORT_DPATA(Base)      ((Base) + 0x00)
+#define PATA_PORT_DATA(Base)      ((Base) + 0x00)
 #define PATA_PORT_ERROR(Base)      ((Base) + 0x01)
 #define PATA_PORT_FEATURES(Base)   ((Base) + 0x01)
 #define PATA_PORT_SECTORS(Base)    ((Base) + 0x02)
@@ -22,30 +22,51 @@
 #define PATA_PORT_COMMAND(Base)    ((Base) + 0x07)
 #define PATA_PORT_CONTROL(Base)    ((Base) + 0x0206)
 
-bool pata_init(pata_info_t info) {
-	port8_out(PATA_PORT_DEVICE(info.base), info.master ? 0xA0 : 0xB0);
-	port8_out(PATA_PORT_CONTROL(info.base), 0x00);
-	port8_out(PATA_PORT_DEVICE(info.base), 0xA0);
-	if (port8_in(PATA_PORT_STATUS(info.base)) == 0xFF) {
-		return false;
+uint64_t pata_init(uint16_t base, bool master) {
+	port8_out(PATA_PORT_DEVICE(base), master ? 0xA0 : 0xB0);
+	port8_out(PATA_PORT_CONTROL(base), 0x00);
+	port8_out(PATA_PORT_DEVICE(base), 0xA0);
+	if (port8_in(PATA_PORT_STATUS(base)) == 0xFF) {
+		return 0x00;
 	}
 
-	port8_out(PATA_PORT_DEVICE(info.base), info.master ? 0xA0 : 0xB0);
-	port8_out(PATA_PORT_SECTORS(info.base), 0x00);
-	port8_out(PATA_PORT_ADDRESS_LO(info.base), 0x00);
-	port8_out(PATA_PORT_ADDRESS_MI(info.base), 0x00);
-	port8_out(PATA_PORT_ADDRESS_HI(info.base), 0x00);
-	port8_out(PATA_PORT_COMMAND(info.base), PATA_COMMAND_IDENTIFY);
+	port8_out(PATA_PORT_DEVICE(base), master ? 0xA0 : 0xB0);
+	port8_out(PATA_PORT_SECTORS(base), 0x00);
+	port8_out(PATA_PORT_ADDRESS_LO(base), 0x00);
+	port8_out(PATA_PORT_ADDRESS_MI(base), 0x00);
+	port8_out(PATA_PORT_ADDRESS_HI(base), 0x00);
+	port8_out(PATA_PORT_COMMAND(base), PATA_COMMAND_IDENTIFY);
 
 	uint8_t status;
-	while (((status = port8_in(PATA_PORT_STATUS(info.base))) & 0x81) == 0x80);
+	while (((status = port8_in(PATA_PORT_STATUS(base))) & 0x81) == 0x80);
 	if (status == 0x00 || status & 0x01) {
-		return false;
+		return 0x00;
 	}
-	for (uint16_t i = 0x00; i < 0x100; i++) {
-		port16_in(PATA_PORT_DPATA(info.base));
+
+	uint64_t sectors = 0x00;
+	for (uint16_t i = 0x00; i < 0x100;) {
+		if (i == 0x3C) {
+			uint32_t value = (uint64_t)port16_in(PATA_PORT_DATA(base));
+			value |= (uint64_t)port16_in(PATA_PORT_DATA(base)) << 0x10;
+			if (value != 0x00) {
+				sectors = value;
+			}
+			i += 0x02;
+		} else if (i == 0x64) {
+			uint64_t value = (uint64_t)port16_in(PATA_PORT_DATA(base));
+			value |= (uint64_t)port16_in(PATA_PORT_DATA(base)) << 0x10;
+			value |= (uint64_t)port16_in(PATA_PORT_DATA(base)) << 0x20;
+			value |= (uint64_t)port16_in(PATA_PORT_DATA(base)) << 0x30;
+			if (value != 0x00) {
+				sectors = value;
+			}
+			i += 0x04;
+		} else {
+			port16_in(PATA_PORT_DATA(base));
+			i += 0x01;
+		}
 	}
-	return true;
+	return sectors;
 }
 
 static uint16_t pata_read28(pata_info_t info, uint32_t address, void *buffer, uint16_t sectors) {
@@ -69,7 +90,7 @@ static uint16_t pata_read28(pata_info_t info, uint32_t address, void *buffer, ui
 			return i;
 		}
 		for (uint16_t j = 0x00; j < 0x100; j++) {
-			*((uint16_t*)buffer) = port16_in(PATA_PORT_DPATA(info.base));
+			*((uint16_t*)buffer) = port16_in(PATA_PORT_DATA(info.base));
 			buffer = ((uint16_t*)buffer) + 1;
 		}
 	}
@@ -97,7 +118,7 @@ static uint16_t pata_write28(pata_info_t info, uint32_t address, const void *buf
 			return i;
 		}
 		for (uint16_t j = 0x00; j < 0x100; j++) {
-			port16_out(PATA_PORT_DPATA(info.base), *((uint16_t*)buffer));
+			port16_out(PATA_PORT_DATA(info.base), *((uint16_t*)buffer));
 			buffer = ((uint16_t*)buffer) + 1;
 		}
 		port8_out(PATA_PORT_COMMAND(info.base), PATA_COMMAND_FLUSH28);
@@ -130,7 +151,7 @@ static uint32_t pata_read48(pata_info_t info, uint64_t address, void *buffer, ui
 			return i;
 		}
 		for (uint16_t j = 0x00; j < 0x100; j++) {
-			*((uint16_t*)buffer) = port16_in(PATA_PORT_DPATA(info.base));
+			*((uint16_t*)buffer) = port16_in(PATA_PORT_DATA(info.base));
 			buffer = ((uint16_t*)buffer) + 1;
 		}
 	}
@@ -163,7 +184,7 @@ static uint32_t pata_write48(pata_info_t info, uint64_t address, const void *buf
 			return i;
 		}
 		for (uint16_t j = 0x00; j < 0x100; j++) {
-			port16_out(PATA_PORT_DPATA(info.base), *((uint16_t*)buffer));
+			port16_out(PATA_PORT_DATA(info.base), *((uint16_t*)buffer));
 			buffer = ((uint16_t*)buffer) + 1;
 		}
 		port8_out(PATA_PORT_COMMAND(info.base), PATA_COMMAND_FLUSH48);

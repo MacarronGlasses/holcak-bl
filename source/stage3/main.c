@@ -1,5 +1,4 @@
 #include <stdnoreturn.h>
-#include <driver/pata.h>
 #include <driver/disk.h>
 #include <driver/idt.h>
 #include <driver/isr.h>
@@ -37,27 +36,16 @@ __cdecl void main(void) {
 
 	/*
 	disk_t disk = disk_pata(0x01F0, true);
-	if (disk.type == DISK_TYPE_ERROR) {
+	if (disk.sectors == 0x00) {
 		panic("Error: Could not initialize disk!");
 	}
 	char buffer[0x0200];
-	if (disk_read(&disk, 0x00, 0x00, buffer, 0x01) != 0x01) {
+	if (disk_read(&disk, 0x00, buffer, 0x01) != 0x01) {
 		panic("Error: Could not read from disk!");
 	}
 	buffer[0x0C] = '\0';
 	printf("%s\n", &buffer[0x03]);
 	*/
-
-	disk_t disk = disk_pata(0x01F0, true);
-	if (disk.type == DISK_TYPE_ERROR) {
-		panic("Error: Could not initialize disk!");
-	}
-	for (uint32_t i = 0; i < 0x01; i++) {
-		printf("%hhx\n", disk.partitions[i].bootable);
-		printf("%hhx\n", disk.partitions[i].system_id);
-		printf("%x\n", disk.partitions[i].address);
-		printf("%x\n", disk.partitions[i].sectors);
-	}
 
 	/*
 	for (uint16_t id = 0x00; id < PCI_ID(pci_info.buses, 0x00, 0x00); ) {

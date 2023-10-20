@@ -10,7 +10,7 @@ typedef struct {
 	bool master;
 } pata_info_t;
 
-bool pata_init(pata_info_t info);
+uint64_t pata_init(uint16_t base, bool master);
 uint32_t pata_read(pata_info_t info, uint64_t address, void *buffer, uint32_t sectors);
 uint32_t pata_write(pata_info_t info, uint64_t address, const void *buffer, uint32_t sectors);
 
