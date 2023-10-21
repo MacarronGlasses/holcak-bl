@@ -10,7 +10,7 @@
 #define PATA_COMMAND_WRITE48       0x34
 #define PATA_COMMAND_FLUSH48       0xEA
 
-#define PATA_PORT_DATA(Base)      ((Base) + 0x00)
+#define PATA_PORT_DATA(Base)       ((Base) + 0x00)
 #define PATA_PORT_ERROR(Base)      ((Base) + 0x01)
 #define PATA_PORT_FEATURES(Base)   ((Base) + 0x01)
 #define PATA_PORT_SECTORS(Base)    ((Base) + 0x02)
@@ -69,7 +69,7 @@ uint64_t pata_init(uint16_t base, bool master) {
 	return sectors;
 }
 
-static uint16_t pata_read28(pata_info_t info, uint32_t address, void *buffer, uint16_t sectors) {
+static uint16_t pata_read28(pata_t info, uint32_t address, void *buffer, uint16_t sectors) {
 	if (address & 0xF0000000) {
 		return 0x00;
 	}
@@ -97,7 +97,7 @@ static uint16_t pata_read28(pata_info_t info, uint32_t address, void *buffer, ui
 	return sectors;
 }
 
-static uint16_t pata_write28(pata_info_t info, uint32_t address, const void *buffer, uint16_t sectors) {
+static uint16_t pata_write28(pata_t info, uint32_t address, const void *buffer, uint16_t sectors) {
 	if (address & 0xF0000000) {
 		return 0x00;
 	}
@@ -125,7 +125,7 @@ static uint16_t pata_write28(pata_info_t info, uint32_t address, const void *buf
 	}
 	return sectors;
 }
-static uint32_t pata_read48(pata_info_t info, uint64_t address, void *buffer, uint32_t sectors) {
+static uint32_t pata_read48(pata_t info, uint64_t address, void *buffer, uint32_t sectors) {
 	if (address & 0xFFFF000000000000) {
 		return 0x00;
 	}
@@ -158,7 +158,7 @@ static uint32_t pata_read48(pata_info_t info, uint64_t address, void *buffer, ui
 	return sectors;
 }
 
-static uint32_t pata_write48(pata_info_t info, uint64_t address, const void *buffer, uint32_t sectors) {
+static uint32_t pata_write48(pata_t info, uint64_t address, const void *buffer, uint32_t sectors) {
 	if (address & 0xFFFF000000000000) {
 		return 0x00;
 	}
@@ -192,14 +192,14 @@ static uint32_t pata_write48(pata_info_t info, uint64_t address, const void *buf
 	return sectors;
 }
 
-uint32_t pata_read(pata_info_t info, uint64_t address, void *buffer, uint32_t sectors) {
+uint32_t pata_read(pata_t info, uint64_t address, void *buffer, uint32_t sectors) {
 	if (~(UINT64_MAX >> 0x24) & address || sectors > UINT8_MAX + 0x01) {
 		return pata_read48(info, address, buffer, sectors);
 	}
 	return pata_read28(info, address, buffer, sectors);
 }
 
-uint32_t pata_write(pata_info_t info, uint64_t address, const void *buffer, uint32_t sectors) {
+uint32_t pata_write(pata_t info, uint64_t address, const void *buffer, uint32_t sectors) {
 	if (~(UINT64_MAX >> 0x24) & address || sectors > UINT8_MAX + 0x01) {
 		return pata_write48(info, address, buffer, sectors);
 	}

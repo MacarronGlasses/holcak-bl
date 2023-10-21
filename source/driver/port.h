@@ -1,5 +1,4 @@
-#ifndef DRIVER_PORT_H_
-#define DRIVER_PORT_H_
+#pragma once
 #include <stdint.h>
 
 uint8_t port8_in(uint16_t id);
@@ -12,5 +11,3 @@ uint32_t port32_in(uint16_t id);
 void port32_out(uint16_t id, uint32_t value);
 
 void port_wait(void);
-
-#endif//DRIVER_PORT_H_

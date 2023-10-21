@@ -79,4 +79,4 @@ ${PROCESSED_FILES}: script/process.py
 	./script/process.py $(abspath source/)
 
 clean:
-	rm -rf build/
+	rm -rf build/ ${PROCESSED_FILES}

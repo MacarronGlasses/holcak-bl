@@ -6,14 +6,12 @@ if len(argv) < 2:
 	print("Error: Insufficient number of arguments were provided!")
 	exit(1)
 with open(f"{argv[1]}/driver/isrg.h", "w") as f:
-	f.write("#ifndef DRIVER_ISRG_H_\n")
-	f.write("#define DRIVER_ISRG_H_\n")
+	f.write("#pragma once\n")
 	f.write("#include <global.h>\n")
 	f.write("#include \"idt.h\"\n\n")
 	for i in range(0xFF):
 		f.write(f"extern __cdecl void isr_{i}(void);\n")
-	f.write("void isr_init(void);\n\n")
-	f.write("#endif//DRIVER_ISRG_H_\n")
+	f.write("void isr_init(void);\n")
 with open(f"{argv[1]}/driver/isrg.c", "w") as f:
 	f.write("#include \"isrg.h\"\n\n")
 	f.write("void isr_init(void) {\n")

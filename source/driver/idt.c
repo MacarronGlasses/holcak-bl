@@ -1,12 +1,12 @@
 #include "isr.h"
 #include "idt.h"
 
-static idt_gate_t idt_table[0x100];
-static idt_descriptor_t idt_descriptor;
+static idt_gate_t idt_table[0x0100];
+static idt_desc_t idt_desc = {0, 0};
 
 void idt_init(void) {
-	idt_descriptor = (idt_descriptor_t){sizeof(idt_table)-1, (uint32_t)idt_table};
-	__asm__ volatile ("lidtl (%0)" : : "r" (&idt_descriptor));
+	idt_desc = (idt_desc_t){sizeof(idt_table)-1, (uint32_t)idt_table};
+	__asm__ volatile ("lidtl (%0)" : : "r" (&idt_desc));
 }
 
 void idt_gate_init(uint8_t id, void(*base)(void), uint8_t flags) {

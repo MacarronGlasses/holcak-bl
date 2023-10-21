@@ -1,5 +1,4 @@
-#ifndef STAGE3_DISK_H_
-#define STAGE3_DISK_H_
+#pragma once
 #include <stdbool.h>
 #include <stdint.h>
 #include "pata.h"
@@ -9,7 +8,7 @@ typedef enum {
 } disk_type_t;
 
 typedef union {
-	pata_info_t pata;
+	pata_t pata;
 } disk_data_t;
 
 typedef struct {
@@ -22,5 +21,3 @@ typedef struct {
 disk_t disk_pata(uint16_t base, bool master);
 uint32_t disk_read(disk_t *disk, uint64_t address, void *buffer, uint32_t sectors);
 uint32_t disk_write(disk_t *disk, uint64_t address, const void *buffer, uint32_t sectors);
-
-#endif//STAGE3_DISK_H_

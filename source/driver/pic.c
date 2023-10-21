@@ -33,14 +33,14 @@ void pic_stop(void) {
 	port8_out(PIC1_DATA, 0xFF);
 }
 
-void pic_mask(uint8_t irq, bool mask) {
-	uint8_t port = irq < 0x08 ? PIC1_DATA : (irq -= 0x08, PIC2_DATA);
-	port8_out(port, mask ? port8_in(port) | (0x01 << irq) : port8_in(port) & ~(0x01 << irq));
+void pic_mask(uint8_t id, bool mask) {
+	uint8_t port = id < 0x08 ? PIC1_DATA : (id -= 0x08, PIC2_DATA);
+	port8_out(port, mask ? port8_in(port) | (0x01 << id) : port8_in(port) & ~(0x01 << id));
 	port_wait();
 }
 
-void pic_eoi(uint8_t irq) {
-	port8_out(irq < 0x08 ? PIC1_COMMAND : PIC2_COMMAND, PIC_COMMAND_EOI);
+void pic_eoi(uint8_t id) {
+	port8_out(id < 0x08 ? PIC1_COMMAND : PIC2_COMMAND, PIC_COMMAND_EOI);
 	port_wait();
 }
 

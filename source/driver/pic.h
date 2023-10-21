@@ -1,5 +1,4 @@
-#ifndef DRIVER_PIC_H_
-#define DRIVER_PIC_H_
+#pragma once
 #include <stdbool.h>
 #include <stdint.h>
 
@@ -32,9 +31,7 @@
 
 void pic_init(void);
 void pic_stop(void);
-void pic_mask(uint8_t irq, bool mask);
-void pic_eoi(uint8_t irq);
+void pic_mask(uint8_t id, bool mask);
+void pic_eoi(uint8_t id);
 uint16_t pic_irr(void);
 uint16_t pic_isr(void);
-
-#endif//DRIVER_PIC_H_

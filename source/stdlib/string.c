@@ -1,16 +1,12 @@
 #include "string.h"
 
 char *strcpy(char *restrict dst, const char *restrict src) {
-	for (size_t i = 0; src[i] != '\0'; i++) {
-		dst[i] = src[i];
-	}
+	for (size_t i = 0; (dst[i] = src[i]); i++);
 	return dst;
 }
 
 char *strncpy(char *restrict dst, const char *restrict src, size_t size) {
-	for (size_t i = 0; i < size; i++) {
-		dst[i] = src[i];
-	}
+	for (size_t i = 0; i < size && (dst[i] = src[i]); i++);
 	return dst;
 }
 

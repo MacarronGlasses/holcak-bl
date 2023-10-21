@@ -1,5 +1,4 @@
-#ifndef DRIVER_MBR_H_
-#define DRIVER_MBR_H_
+#pragma once
 #include <global.h>
 #include <stdint.h>
 
@@ -15,5 +14,3 @@ typedef struct __packed {
 	uint32_t address;
 	uint32_t sectors;
 } partition_t;
-
-#endif//DRIVER_MBR_H_

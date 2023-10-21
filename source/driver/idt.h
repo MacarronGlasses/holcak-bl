@@ -1,5 +1,4 @@
-#ifndef DRIVER_IDT_H_
-#define DRIVER_IDT_H_
+#pragma once
 #include <stdbool.h>
 #include <global.h>
 #include <stdint.h>
@@ -18,17 +17,15 @@
 typedef struct __packed {
 	uint16_t base_lo;
 	uint16_t segment;
-	uint8_t  reserved;
-	uint8_t  flags;
+	uint8_t reserved;
+	uint8_t flags;
 	uint16_t base_hi;
 } idt_gate_t;
 
 typedef struct __packed {
 	uint16_t limit;
 	uint32_t base;
-} idt_descriptor_t;
+} idt_desc_t;
 
 void idt_init(void);
 void idt_gate_init(uint8_t id, void(*base)(void), uint8_t flags);
-
-#endif//DRIVER_IDT_H_

@@ -1,5 +1,4 @@
-#ifndef DRIVER_ISR_H_
-#define DRIVER_ISR_H_
+#pragma once
 #include <global.h>
 #include <stdint.h>
 #include "isrg.h"
@@ -14,5 +13,3 @@ typedef void(*isr_handler_t)(isr_frame_t);
 
 void isr_handler_init(uint8_t id, isr_handler_t handler);
 __cdecl void isr_handler(isr_frame_t frame);
-
-#endif//DRIVER_ISR_H_

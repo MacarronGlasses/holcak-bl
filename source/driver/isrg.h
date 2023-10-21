@@ -1,5 +1,4 @@
-#ifndef DRIVER_ISRG_H_
-#define DRIVER_ISRG_H_
+#pragma once
 #include <global.h>
 #include "idt.h"
 
@@ -259,5 +258,3 @@ extern __cdecl void isr_252(void);
 extern __cdecl void isr_253(void);
 extern __cdecl void isr_254(void);
 void isr_init(void);
-
-#endif//DRIVER_ISRG_H_

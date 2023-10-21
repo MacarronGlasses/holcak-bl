@@ -1,5 +1,4 @@
-#ifndef DRIVER_PATA_H_
-#define DRIVER_PATA_H_
+#pragma once
 #include <stdbool.h>
 #include <stdint.h>
 
@@ -8,10 +7,8 @@
 typedef struct {
 	uint16_t base;
 	bool master;
-} pata_info_t;
+} pata_t;
 
 uint64_t pata_init(uint16_t base, bool master);
-uint32_t pata_read(pata_info_t info, uint64_t address, void *buffer, uint32_t sectors);
-uint32_t pata_write(pata_info_t info, uint64_t address, const void *buffer, uint32_t sectors);
-
-#endif//DRIVER_PATA_H_
+uint32_t pata_read(pata_t info, uint64_t address, void *buffer, uint32_t sectors);
+uint32_t pata_write(pata_t info, uint64_t address, const void *buffer, uint32_t sectors);

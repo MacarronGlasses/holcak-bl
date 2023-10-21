@@ -1,5 +1,6 @@
 [extern isr_handler]
 
+; Jumps here every time an interrupt occurs
 isr_common:
 	pusha
 	xor eax, eax
@@ -22,7 +23,7 @@ isr_common:
 	add esp, 0x08
 	iret
 
-%macro ISR_MAKE 1
+%macro isr_make 1
 [global isr_%1]
 isr_%1:
 %if !(%1 == 8 || (%1 >= 10 && %1 <= 14) || %1 == 17 || %1 == 21 || %1 == 29 || %1 == 30)
@@ -33,7 +34,7 @@ isr_%1:
 %endmacro
 
 %assign i 0
-%rep 0xFF
-	ISR_MAKE i
+%rep 0x0100
+	isr_make i
 	%assign i i+1
 %endrep

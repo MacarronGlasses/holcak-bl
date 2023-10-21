@@ -1,5 +1,4 @@
-#ifndef STAGE3_INFO_H_
-#define STAGE3_INFO_H_
+#pragma once
 #include <global.h>
 #include <stdint.h>
 
@@ -38,5 +37,3 @@ typedef struct __packed {
 extern cpu_info_t cpu_info;
 extern pci_info_t pci_info;
 extern mem_info_t mem_info;
-
-#endif//STAGE3_INFO_H_

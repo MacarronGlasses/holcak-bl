@@ -1,5 +1,4 @@
-#ifndef DRIVER_VGA_H_
-#define DRIVER_VGA_H_
+#pragma once
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdarg.h>
@@ -37,5 +36,3 @@ void vga_cursor_show(uint8_t shape);
 void vga_cursor_hide(void);
 void vga_cursor_set(uint16_t cursor);
 uint16_t vga_cursor_get(void);
-
-#endif//DRIVER_VGA_H_

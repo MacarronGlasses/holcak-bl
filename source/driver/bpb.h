@@ -1,5 +1,4 @@
-#ifndef DRIVER_BPB_H_
-#define DRIVER_BPB_H_
+#pragma once
 #include <global.h>
 #include <stdint.h>
 
@@ -84,5 +83,3 @@ typedef struct __packed {
 	uint64_t serial_number;
 	uint32_t checksum;
 } bpb_ntfs_t;
-
-#endif//DRIVER_BPB_H_
