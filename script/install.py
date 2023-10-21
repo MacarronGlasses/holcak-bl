@@ -12,11 +12,12 @@ if len(argv) < 3:
 	exit(1)
 with open(argv[1], "rb+") as f:
 	size = path.getsize(f"{argv[2]}/stage1/build.bin")
-	assert size == 0x200
-	f.write(open(f"{argv[2]}/stage1/build.bin", "rb").read(0x1B0))
+	assert size == 0x0200
+	f.write(open(f"{argv[2]}/stage1/build.bin", "rb").read())
 	size = path.getsize(f"{argv[2]}/stage2/build.bin")
-	assert size < 0x7EFFF
+	assert size < 0x07EFFF
+	f.seek(0x01B0)
 	f.write(int(0x01).to_bytes(6, 'little'))
-	f.write(int((size + 0x1FF) // 0x200).to_bytes(2, 'little'))
-	f.seek(0x200)
+	f.write(int((size + 0x01FF) // 0x0200).to_bytes(2, 'little'))
+	f.seek(0x0200)
 	f.write(open(f"{argv[2]}/stage2/build.bin", "rb").read())
