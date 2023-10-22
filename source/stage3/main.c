@@ -20,7 +20,7 @@ noreturn void panic(const char *fmt, ...) {
 
 noreturn void error(isr_frame_t frame) {
 	const char *msg[0x20] = {"Division Error", "Debug", "Non-Maskable Interrupt", "Breakpoint", "Overflow", "Bound Range Exceeded", "Invalid Opcode", "Device Not Available", "Double Fault", "Coprocessor Segment Overrun", "Invalid TSS", "Segment Not Present", "Stack-Segment Fault", "General Protection Fault", "Page Fault", "Reserved", "x87 Floating-Point Exception", "Alignment Check", "Machine Check", "SIMD Floating-Point Exception", "Control Protection Exception", "Reserved", "Reserved", "Reserved", "Reserved", "Reserved", "Reserved", "Hypervisor Injection Exception", "VMM Comunication Exception", "Security Exception", "Reserved"};
-	printf("Error detected!\n    Message:   %s\n    Error:     %x\n    EAX:       %x\n    EBX:       %x\n    ECX:       %x\n    EDX:       %x\n    ESP:       %x\n    EBP:       %x\n    ESI:       %x\n    EDI:       %x\n    EIP:       %x\n    DS:        %x\n    CS:        %x\n    SS:        %x\n    FLAGS:     %x\n", msg[frame.id], frame.error, frame.eax, frame.ebx, frame.ecx, frame.edx, frame.esp, frame.ebp, frame.esi, frame.edi, frame.eip, frame.ds, frame.cs, frame.ss, frame.flags);
+	printf("Exception detected!\n    String:    %s\n    Extended:  %x\n    EAX:       %x\n    EBX:       %x\n    ECX:       %x\n    EDX:       %x\n    ESP:       %x\n    EBP:       %x\n    ESI:       %x\n    EDI:       %x\n    EIP:       %x\n    DS:        %x\n    CS:        %x\n    SS:        %x\n    FLAGS:     %x\n", msg[frame.id], frame.error, frame.eax, frame.ebx, frame.ecx, frame.edx, frame.esp, frame.ebp, frame.esi, frame.edi, frame.eip, frame.ds, frame.cs, frame.ss, frame.flags);
 	__asm__ volatile ("cli");
 	while (1);
 }
@@ -33,6 +33,8 @@ __cdecl void main(void) {
 	}
 	idt_init();
 	printf("IDT enabled!\n");
+	pic_init();
+	printf("PIC enabled!\n");
 
 	/*
 	disk_t disk = disk_pata(0x01F0, true);

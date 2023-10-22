@@ -11,7 +11,7 @@ isr_common:
 	mov es, ax
 	mov fs, ax
 	mov gs, ax
-	
+
 	call isr_handler
 	
 	pop eax 
