@@ -1,10 +1,9 @@
 #pragma once
 #include <stdbool.h>
-#include <assert.h>
 #include <stddef.h>
 #include "mem.h"
 
-#define PMM_PAGE_SIZE ((0x1000 - sizeof(size_t) + sizeof(struct pmm_page*)) / sizeof(struct pmm_node))
+#define PMM_PAGE_SIZE ((0x1000 - sizeof(size_t) - sizeof(struct pmm_page*)) / sizeof(struct pmm_node))
 
 typedef struct pmm_node {
 	struct pmm_node *next;
@@ -15,11 +14,11 @@ typedef struct pmm_node {
 
 typedef struct pmm_page {
 	struct pmm_page *next;
-	pmm_node_t data[PMM_PAGE_SIZE];
 	size_t size;
+	pmm_node_t data[PMM_PAGE_SIZE];
 } pmm_page_t;
 
-static_assert(sizeof(pmm_page_t) <= 0x1000, "PMM page has to be able to fit inside a memory page!");
+_Static_assert(sizeof(pmm_page_t) <= 0x1000, "PMM page has to be able to fit inside a memory page!");
 
 bool pmm_init(mem_info_t info);
 void *pmm_alloc(void);
