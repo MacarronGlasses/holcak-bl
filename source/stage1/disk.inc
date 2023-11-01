@@ -191,13 +191,12 @@ section .text
 [bits 16]
 disk_read_0x42:
 	pusha
-	mov di, disk_packet
-	mov byte  [di+0x00], 0x10
-	mov byte  [di+0x01], 0x00
-	mov word  [di+0x02], si
-	mov dword [di+0x04], ebx
-	mov dword [di+0x08], eax
-	mov word  [di+0x0C], cx
+	mov byte [disk_packet.size], 0x10
+	mov byte [disk_packet.reserved], 0x00
+	mov word [disk_packet.sectors], si
+	mov dword [disk_packet.buffer], ebx
+	mov dword [disk_packet.lba_lo], eax
+	mov word [disk_packet.lba_hi], cx
 
 	xor cx, cx
 	mov word  [di+0x0E], cx

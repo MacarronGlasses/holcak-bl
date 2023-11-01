@@ -12,6 +12,12 @@ mem_init:
 	mov ecx, mem_node_size
 	mov edx, 0x534D4150
 
+	; Fill memory info with zeros
+	mov [mem_info.length],   bx
+	mov [mem_info.block],    bx
+	mov [mem_info.total_lo], ebx
+	mov [mem_info.total_hi], ebx
+
 	; Initialize es:di (Pointer to buffer)
 	mov edi, mem_info.data
 	shr edi, 0x04
@@ -25,7 +31,7 @@ mem_init:
 	jne .error
 
 	; Save size of `mem_node`
-	mov [mem_info.bytes], cx
+	mov [mem_info.block], cx
 	pop es
 
 	call mem_init_0xE820
@@ -57,6 +63,19 @@ mem_init:
 	mov edi, eax
 	add edi, mem_info.data
 	call mem_node_print
+
+	; Add value to total
+	mov eax, [mem_info.total_lo]
+	add eax, [edi+0x08]
+	mov [mem_info.total_lo], eax
+	jnc .skip
+
+	; Add carry to total
+	mov eax, [mem_info.total_hi]
+	inc eax
+	mov [mem_info.total_hi], eax
+
+.skip:
 	pop eax
 
 	inc cx
@@ -73,10 +92,18 @@ mem_init:
 	mov si, .msg3
 	call puts
 	xor ebx, ebx
-	mov bx, [mem_info.bytes]
+	mov bx, [mem_info.block]
 	call putx32
 	call putnl
 
+	mov si, .msg6
+	call puts
+	mov ebx, [mem_info.total_hi]
+	call putx32
+	mov ebx, [mem_info.total_lo]
+	call putx32
+	call putnl
+	
 	popad
 	ret
 
@@ -92,8 +119,9 @@ mem_init:
 .msg3: db "    Block:     0x", 0x00
 .msg4: db "    Node 0x", 0x00
 .msg5: db ": 0x", 0x00
+.msg6: db "    Total:     0x", 0x00
 
-; Detects free regions of memory using interrupt 0xE820
+; Detects free regions of memory using int 0x15, ax=0xE820
 ; References:
 ;   http://www.ctyme.com/intr/rb-1741.htm
 [bits 16]
@@ -104,7 +132,7 @@ mem_init_0xE820:
 	xor ebx, ebx
 	mov edx, 0x534D4150
 	xor ecx, ecx
-	mov cx, [mem_info.bytes]
+	mov cx, [mem_info.block]
 	mov edi, mem_info.data
 	xor esi, esi
 
@@ -126,7 +154,7 @@ mem_init_0xE820:
 
 	; Test if size of block is valid
 	xor eax, eax
-	mov ax, [mem_info.bytes]
+	mov ax, [mem_info.block]
 	cmp eax, ecx
 	jne .error
 
@@ -161,10 +189,9 @@ mem_init_0xE820:
 
 ; Prints information about memory node
 ; Parameters:
-;   edi   - Memory block address
+;   edi   - Memory node address
 mem_node_print:
-	push eax
-	push si
+	pushad
 
 	mov si, .msg0
 	call puts
@@ -191,8 +218,7 @@ mem_node_print:
 	mov si, .msg3
 	call puts
 
-	pop si
-	pop eax
+	popad
 	ret
 
 .msg0: db "", 0x00
@@ -204,13 +230,15 @@ mem_node_print:
 mem_data_size: equ 0xFF
 section .bss
 struc mem_node
-	.base:  resq 0x01
-	.limit: resq 0x01
-	.type:  resd 0x01
-	.acpi:  resd 0x01
+	.base:     resq 0x01
+	.limit:    resq 0x01
+	.type:     resd 0x01
+	.acpi:     resd 0x01
 endstruc
 mem_info:
-	.length: resw 0x01
-	.bytes:  resw 0x01
-	.data:   resb mem_data_size*mem_node_size
+	.length:   resw 0x01
+	.block:    resw 0x01
+	.total_lo: resd 0x01
+	.total_hi: resd 0x01
+	.data:     resb mem_data_size*mem_node_size
 section .text

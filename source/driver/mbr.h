@@ -13,4 +13,4 @@ typedef struct __packed {
 	uint8_t limit_hi;
 	uint32_t address;
 	uint32_t sectors;
-} partition_t;
+} mbr_partition_t;

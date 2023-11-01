@@ -22,11 +22,11 @@ $(shell echo $1 | tr a-z A-Z):=$(subst source/$1/,build/$1/,$(addsuffix .o,$(she
 
 build/$1/%.c.o: source/$1/%.c
 	@mkdir -p $${@D}
-	gcc -Wall -Wextra -pedantic -std=c17 -ggdb -ffreestanding -nostartfiles -MMD -MP -fno-pie -fno-pic -nostdlib -nostdinc -c -m32 -I ${TOOLCHAIN_BUILD_LIBRARY} -I source/ -I source/stdlib/ -o $$@ $$<
+	${TOOLCHAIN_BUILD}-gcc -Wall -Wextra -pedantic -std=c17 -ggdb -ffreestanding -nostartfiles -MMD -MP -fno-pie -fno-pic -nostdlib -nostdinc -c -m32 -I ${TOOLCHAIN_BUILD_LIBRARY} -I source/ -I source/stdlib/ -o $$@ $$<
 
 build/$1/%.asm.o: source/$1/%.asm
 	@mkdir -p $${@D}
-	nasm -felf32 -g -Fdwarf -I source/$1/ -MP -MF $(addsuffix .d,$(basename $$@)) -o $$@ $$<
+	nasm -felf32 -g -Fdwarf -I source/$1/ -MD $(addsuffix .d,$(basename $$@)) -o $$@ $$<
 
 ifeq (1,$(shell if [ -d build/stage2/ ]; then echo 1; fi))
     -include $$(shell find build/stage2/ -type f -name '*.d')

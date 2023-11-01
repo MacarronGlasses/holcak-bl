@@ -14,10 +14,10 @@ typedef union {
 typedef struct {
 	disk_type_t type;
 	disk_data_t data;
-	uint64_t address;
-	uint64_t sectors;
+	uint64_t begin;
+	uint64_t limit;
 } disk_t;
 
 disk_t disk_pata(uint16_t base, bool master);
-uint32_t disk_read(disk_t *disk, uint64_t address, void *buffer, uint32_t sectors);
-uint32_t disk_write(disk_t *disk, uint64_t address, const void *buffer, uint32_t sectors);
+uint32_t disk_read(disk_t *self, uint64_t begin, void *buffer, uint32_t limit);
+uint32_t disk_write(disk_t *self, uint64_t begin, const void *buffer, uint32_t limit);

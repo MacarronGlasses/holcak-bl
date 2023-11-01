@@ -5,9 +5,13 @@
 #include <driver/pic.h>
 #include <driver/pci.h>
 #include <driver/mbr.h>
+#include <driver/mem.h>
+#include <driver/mb1.h>
 #include <global.h>
 #include "printf.h"
 #include "info.h"
+
+extern mem_info_t mem_info;
 
 noreturn void panic(const char *fmt, ...) {
 	va_list args;
