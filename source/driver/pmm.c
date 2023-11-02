@@ -38,6 +38,28 @@ static pmm_node_t *pmm_node_alloc(void) {
 	__builtin_unreachable();
 }
 
+static void pmm_node_insert(pmm_node_t *self) {
+	// TODO: Handle overlapping!
+	pmm_node_t *node = pmm_node;
+	if (self == node) {
+		return;
+	}
+	if (self->base < node->base) {
+		pmm_node = self;
+		self->next = node;
+		return;
+	}
+	while (node->next != NULL) {
+		if (self->base < node->next->base) {
+			self->next = node->next;
+			node->next = self;
+			return;
+		}
+		node = node->next;
+	}
+	node->next = self;
+}
+
 #include <stage3/printf.h>
 
 bool pmm_init(const mem_info_t *info) {
@@ -63,34 +85,13 @@ bool pmm_init(const mem_info_t *info) {
 			.size = size,
 			.type = node->type,
 		};
-		pmm_node_t *next = pmm_node;
-		if (self == next) {
-			continue;
-		}
-		if (self->base < next->base) {
-			pmm_node = self;
-			self->next = next;
-			continue;
-		}
-		while (true) {
-			// TODO: Handle overlapping!
-			if (next->next == NULL) {
-				next->next = self;
-				break;
-			}
-			if (self->base < next->next->base) {
-				self->next = next->next;
-				next->next = self;
-				break;
-			}
-			next = next->next;
-		}
+		pmm_node_insert(self);
 	}
-
-	for (pmm_node_t *next = pmm_node; next != NULL; next = next->next) {
-		printf("%x = %x (%x)\n", next->base, next->size, (uint32_t)next->type);
+	/*
+	for (pmm_node_t *node = pmm_node; node != NULL; node = node->next) {
+		printf("%x = %x (%x)\n", node->base, node->size, (uint32_t)node->type);
 	}
-
+	*/
 	return true;
 }
 
