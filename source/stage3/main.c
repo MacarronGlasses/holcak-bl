@@ -7,6 +7,7 @@
 #include <driver/mbr.h>
 #include <driver/mem.h>
 #include <driver/mb1.h>
+#include <driver/pmm.h>
 #include <global.h>
 #include "printf.h"
 #include "info.h"
@@ -39,6 +40,10 @@ __cdecl void main(void) {
 	printf("IDT enabled!\n");
 	pic_init();
 	printf("PIC enabled!\n");
+	if (!pmm_init(mem_info)) {
+		panic("Error: Could not initialize PMM!\n");
+	}
+	printf("PMM enabled!\n");
 
 	/*
 	disk_t disk = disk_pata(0x01F0, true);
