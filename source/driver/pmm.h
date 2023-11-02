@@ -20,6 +20,6 @@ typedef struct pmm_page {
 
 _Static_assert(sizeof(pmm_page_t) <= 0x1000, "PMM page has to be able to fit inside a memory page!");
 
-bool pmm_init(mem_info_t info);
+bool pmm_init(const mem_info_t *info);
 void *pmm_alloc(void);
 void pmm_free(void *base);

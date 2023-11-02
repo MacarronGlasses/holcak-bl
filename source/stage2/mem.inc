@@ -231,7 +231,7 @@ mem_data_size: equ 0xFF
 section .bss
 struc mem_node
 	.base:     resq 0x01
-	.limit:    resq 0x01
+	.size:     resq 0x01
 	.type:     resd 0x01
 	.acpi:     resd 0x01
 endstruc

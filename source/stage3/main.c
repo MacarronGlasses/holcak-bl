@@ -40,7 +40,7 @@ __cdecl void main(void) {
 	printf("IDT enabled!\n");
 	pic_init();
 	printf("PIC enabled!\n");
-	if (!pmm_init(mem_info)) {
+	if (!pmm_init(&mem_info)) {
 		panic("Error: Could not initialize PMM!\n");
 	}
 	printf("PMM enabled!\n");
