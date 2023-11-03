@@ -44,6 +44,11 @@ __cdecl void main(void) {
 		panic("Error: Could not initialize PMM!\n");
 	}
 	printf("PMM enabled!\n");
+	for (size_t i = 0; i < 0x0100; i++) {
+		// TODO: It is returning NULL, we need to filter out the mem_info!
+		printf("%p\n", pmm_alloc());
+	}
+	pmm_dump();
 
 	/*
 	disk_t disk = disk_pata(0x01F0, true);
